@@ -552,7 +552,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
 <div id="announce" role="region" aria-label="训练进度提示">
   <button class="ann-main" id="annOpen">
     <span class="ann-tag">训练中</span>
-    <span class="ann-text">LingJie 团队自研 <b>HRLM v3.2</b> × LingJie 数据集已开源，我们将会使用它训练出 <b>LingJie-Chat-v2-Beta</b>（64.874M），目前正在单卡 4090 上预训练，点击查看模型、数据集与架构详情</span>
+    <span class="ann-text">LingJie 团队自研 <b>HRLM v3.3</b> × LingJie 数据集已开源，我们将会使用它训练出 <b>LingJie-Chat-v2-Beta</b>（89.67M），目前正在单卡 4090 上预训练，点击查看模型、数据集与架构详情</span>
     <span class="ann-cta">查看论文<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
   </button>
   <button class="ann-close" id="annClose" aria-label="关闭提示">
@@ -604,22 +604,22 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
           <button class="btn btn-ghost" data-goto="models">浏览模型库</button>
         </div>
         <div class="hero-stats reveal d3">
-          <div class="stat"><b>64.874M</b><span>当前在训参数</span></div>
-          <div class="stat"><b>10 × 3</b><span>物理块 × 递归轮数</span></div>
-          <div class="stat"><b>2.6 亿</b><span>预训练 token</span></div>
-          <div class="stat"><b>单卡 4090</b><span>消费级硬件</span></div>
+          <div class="stat"><b>89.67M</b><span>当前在训参数</span></div>
+          <div class="stat"><b>8 + 1</b><span>路由 / 共享专家</span></div>
+          <div class="stat"><b>2.36 亿</b><span>预训练 token</span></div>
+          <div class="stat"><b>单卡 A100</b><span>40G 显存</span></div>
         </div>
       </div>
       <div class="reveal d2">
         <div class="spec-card" aria-label="焦点模型规格卡">
           <div class="spec-head"><h2>LingJie-Chat-v2-Beta</h2><span class="badge preview"><span class="dot"></span>训练中</span></div>
           <div class="spec-rows">
-            <div class="spec-row"><span class="k">架构</span><span class="v">HRLM v3.2（递归 + 混合）</span></div>
-            <div class="spec-row"><span class="k">参数量</span><span class="v">64.874M</span></div>
-            <div class="spec-row"><span class="k">结构</span><span class="v">7 GDN + 3 Mamba-2/Attn</span></div>
+            <div class="spec-row"><span class="k">架构</span><span class="v">HRLM v3.3（递归 + MoE）</span></div>
+            <div class="spec-row"><span class="k">参数量</span><span class="v">89.67M（激活 55M）</span></div>
+            <div class="spec-row"><span class="k">结构</span><span class="v">7 GDN + 3 Mamba-2/Attn + MoE</span></div>
             <div class="spec-row"><span class="k">递归深度</span><span class="v">最多 3 轮（Router 分配）</span></div>
-            <div class="spec-row"><span class="k">训练硬件</span><span class="v">单张 RTX 4090</span></div>
-            <div class="spec-row"><span class="k">许可证</span><span class="v">未发布（架构冻结）</span></div>
+            <div class="spec-row"><span class="k">训练硬件</span><span class="v">单张 A100 40G</span></div>
+            <div class="spec-row"><span class="k">许可证</span><span class="v">未发布（训练中）</span></div>
           </div>
           <div class="spec-cmd">
             <span class="prompt">$</span>
@@ -642,7 +642,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
         </button>
         <button class="entry-card" data-goto="arch">
           <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="15" r="3"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          <h3>架构</h3><p>HRLM v3.2 的六个组件，全部手写、无预训练权重。</p><span class="ec-idx">02 · ARCHITECTURE</span>
+          <h3>架构</h3><p>HRLM v3.3 的六个组件，全部手写、无预训练权重。</p><span class="ec-idx">02 · ARCHITECTURE</span>
         </button>
         <button class="entry-card" data-goto="open">
           <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/><path d="M12 11L4 6.5M12 11l8-4.5M12 11v9"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
@@ -694,14 +694,14 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
         <h3 class="block-title">为什么是窄域？</h3>
         <p>通用大模型为了覆盖一切，付出了昂贵的代价：天量参数、集群训练、黑盒权重、难以复现。而真实世界的大多数需求，发生在少数窄域里——客服意图、票据抽取、领域问答、代码补全。</p>
         <p>LingJie 的选择是：<strong>放弃广度，换取深度与自由</strong>。专为小模型设计创新架构，用窄域数据把每一个参数都用在该用的地方，把「降本增效」写进架构本身，而不是事后压缩。</p>
-        <div class="quote">「智能不必昂贵。当一个 64.87M 的模型就能把一类问题解决好，AGI 才真正属于普通人。」</div>
+        <div class="quote">「智能不必昂贵。当一个 89.67M 的模型就能把一类问题解决好，AGI 才真正属于普通人。」</div>
       </div>
       <div class="tbl-card reveal d1">
         <div class="tbl-scroll">
           <table class="tbl" aria-label="通用大模型与 LingJie 窄域小模型对比">
             <thead><tr><th scope="col">维度</th><th scope="col">通用大模型</th><th scope="col" class="lj">LingJie 窄域小模型</th></tr></thead>
             <tbody>
-              <tr><td class="k">参数规模</td><td class="big">数百 B 起步</td><td class="lj">64.87M – 490M</td></tr>
+              <tr><td class="k">参数规模</td><td class="big">数百 B 起步</td><td class="lj">89.67M – 490M</td></tr>
               <tr><td class="k">训练硬件</td><td class="big">GPU 集群</td><td class="lj">单张消费级显卡</td></tr>
               <tr><td class="k">领域表现</td><td class="big">广而泛</td><td class="lj">窄而精</td></tr>
               <tr><td class="k">开源程度</td><td class="big">多数闭源</td><td class="lj">四大件 100% 开源</td></tr>
@@ -718,7 +718,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
         <div class="trio-item">
           <div class="t-idx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>ACCESSIBLE</div>
           <h3>用得上</h3>
-          <p>64.87M 参数、10 块 3 轮递归的架构，一张消费级显卡就能训练与推理。不需要排队等 API，不需要机房，智能就在你的设备里。</p>
+          <p>89.67M 参数、10 块 3 轮递归的架构，一张消费级显卡就能训练与推理。不需要排队等 API，不需要机房，智能就在你的设备里。</p>
         </div>
         <div class="trio-item">
           <div class="t-idx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M15.5 9.2c-.8-1-2-1.5-3.5-1.5-2 0-3.2 1-3.2 2.3 0 3 6.8 1.4 6.8 4.4 0 1.4-1.4 2.4-3.6 2.4-1.7 0-3-.6-3.8-1.7"/></svg>AFFORDABLE</div>
@@ -770,7 +770,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
     <div class="view-head reveal">
       <div class="sec-label">02 · 架构 ARCHITECTURE</div>
       <h2>不是把大模型缩小，而是<span class="mark">为小模型重新设计</span></h2>
-      <p class="view-sub">HRLM v3.2 的六个组件，全部手写、不依赖 <span class="mono">transformers</span> 模型。选择任意模块查看设计细节，也可以用左右方向键切换。</p>
+      <p class="view-sub">HRLM v3.3 的六个组件，全部手写、不依赖 <span class="mono">transformers</span> 模型。选择任意模块查看设计细节，也可以用左右方向键切换。</p>
     </div>
     <div class="block reveal">
       <div class="arch-steps" id="archSteps" role="tablist" aria-label="架构模块">
@@ -798,9 +798,9 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
           <div class="tbl-scroll">
             <table class="tbl" aria-label="架构设计目标">
               <tbody>
-                <tr><td class="k">参数预算</td><td class="lj">64.874M（规格 64.863M，+0.02%）</td></tr>
+                <tr><td class="k">参数预算</td><td class="lj">89.67M（规格 89.67M，+0.02%）</td></tr>
                 <tr><td class="k">上下文</td><td class="lj">训练 512 → 1024；注意力滑窗 4096</td></tr>
-                <tr><td class="k">训练硬件</td><td class="lj">单张 RTX 4090（24GB）</td></tr>
+                <tr><td class="k">训练硬件</td><td class="lj">单张 A100 40G</td></tr>
                 <tr><td class="k">词表</td><td class="lj">48,000（字节级 BPE，含 7 个特殊符）</td></tr>
                 <tr><td class="k">递归深度</td><td class="lj">最多 3 轮，Router 逐 token 分配</td></tr>
               </tbody>
@@ -860,14 +860,14 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
           <div class="filetree">model/
 ├── <b>jam_block.py</b> <i># JAM 块</i>
 ├── <b>lingjie_code_v2.py</b>
-└── hrlm/model.py <i># HRLM v3.2</i></div>
+└── hrlm/model.py <i># HRLM v3.3</i></div>
         </div>
         <div class="open-card">
           <span class="oc-badge">随数据集原始许可</span>
           <div class="oc-head"><div class="oc-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/><path d="M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div><div><h3>训练数据集</h3><div class="sub">DATASETS</div></div></div>
-          <p>LingJie 自有数据体系：预训练 2.6 亿 token、SFT 647,136 条，全部带清洗流程与来源说明（具体许可以各原始来源为准）。</p>
+          <p>LingJie 自有数据体系：预训练 2.36 亿 token、SFT 647,136 条，全部带清洗流程与来源说明（具体许可以各原始来源为准）。</p>
           <div class="filetree">datasets/
-├── <b>LingJie-P.T.-small</b> <i># 2.6 亿 token</i>
+├── <b>LingJie-P.T.-small</b> <i># 2.36 亿 token</i>
 ├── <b>LingJie-SFT-Cot-small</b> <i># 647,136 条</i>
 └── <i>DATACARD.md · 来源全公开</i></div>
         </div>
@@ -907,12 +907,12 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
     <div class="view-head reveal">
       <div class="sec-label">04 · 复现 REPRODUCE</div>
       <h2>没有一键 CLI，<span class="mark">但有完整的手动流程</span></h2>
-      <p class="view-sub">LingJie 没有 <span class="mono">pip install lingjie</span>，也没有 <span class="mono">lingjie repro</span> 这种命令。下面这套流程是我们在单卡 4090 上真实跑通的：从准备机器到拿到权重，每条命令都可以直接复制。预计 4~6 小时（含数据准备）。</p>
+      <p class="view-sub">LingJie 没有 <span class="mono">pip install lingjie</span>，也没有 <span class="mono">lingjie repro</span> 这种命令。下面这套流程在单卡 A100 40G 上真实跑通：从准备机器到拿到权重，每条命令都可以直接复制。数据准备约 15 分钟，训练约 6 小时。</p>
     </div>
     <div class="block reveal">
       <div class="dstep"><div class="dnum">01</div><div>
         <h4>准备机器</h4>
-        <p>单卡 RTX 4090（24GB）即可；数据打包阶段吃内存，建议 ≥32GB。系统 Ubuntu 22.04 + CUDA 12。</p>
+        <p>单卡 A100 40G；24GB 显存的 4090 也能跑（阶段 B/C 会自动把 micro-batch 减半）。数据打包阶段吃内存，建议 ≥32GB。</p>
         <pre class="cb"><span class="c"># 检查环境</span>
 nvidia-smi
 python3 -V          <span class="c"># 3.11</span>
@@ -934,7 +934,7 @@ ls hrlm           <span class="c"># model.py train.py data.py ...</span></pre>
       </div></div>
       <div class="dstep"><div class="dnum">04</div><div>
         <h4>下载数据并核对</h4>
-        <p>预训练 1,184,107 条（1.3GB）、SFT 647,136 条（2.1GB）。先核对行数，别急着训。</p>
+        <p>预训练 1,184,107 条（1.3GB）、SFT 647,136 条（1.9GB）。先核对行数，别急着训。</p>
         <pre class="cb">cd /data/data
 curl -L -C - -o pretrain.jsonl "<预训练直链>"
 curl -L -C - -o sft.jsonl "<SFT 直链>"
@@ -942,21 +942,28 @@ wc -l pretrain.jsonl sft.jsonl
 <span class="c"># 1184107 pretrain.jsonl / 647136 sft.jsonl</span></pre>
       </div></div>
       <div class="dstep"><div class="dnum">05</div><div>
-        <h4>数据准备：训分词器 + 打包</h4>
-        <p>这一步会训练 48000 词表的字节级 BPE，并把语料打包成 uint16 二进制，供训练零拷贝随机读。</p>
+        <h4>数据准备：训分词器 + 并行打包</h4>
+        <p>训练 48000 词表的字节级 BPE（按子句切分，实测 <b>1.685 字符/token</b>），再按 24 进程并行打包成 uint16 二进制。</p>
         <pre class="cb">cd /data
-python -m hrlm.prepare_data \
-  --pretrain /data/data/pretrain.jsonl \
-  --sft /data/data/sft.jsonl \
-  --out /data/hrlm/artifacts
-<span class="c"># =&gt; artifacts/tokenizer.json  （vocab 48000）</span>
-<span class="c"># =&gt; artifacts/pretrain.bin/.idx（368,975 条 / 3.78 亿 token）</span>
-<span class="c"># =&gt; artifacts/sft.bin/.idx</span></pre>
-        <div class="note">中文必须先把汉字与数字孤立成预 token，否则整句会被当成一个"词"，BPE 训练会直接 OOM。</div>
+python hrlm/deploy/train_tok.py \
+  --jsonl /data/data/pretrain.jsonl \
+  --out /data/hrlm/artifacts/tokenizer.json --chars 60000000
+
+python -m hrlm.deploy.pack_parallel \
+  --jsonl /data/data/pretrain.jsonl --tok artifacts/tokenizer.json \
+  --out artifacts/pretrain --mode pretrain --max-len 1024 --workers 24
+
+python -m hrlm.deploy.pack_parallel \
+  --jsonl /data/data/sft_v2.jsonl  --tok artifacts/tokenizer.json \
+  --out artifacts/sft_v2  --mode sft --max-len 512 --workers 24
+<span class="c"># =&gt; pretrain.bin/.idx  2.36 亿 token（368,975 条定长序列）</span>
+<span class="c"># =&gt; sft_v2.bin/.idx    647,136 条 / 1.67 亿 token</span></pre>
+        <div class="note"><b>关键坑</b>：如果把每个汉字都切成独立预 token，BPE 永远无法跨字合并，结果就是「一字一 token」，模型逐字预测、loss 天然虚高。必须按标点/空白切成子句再让 BPE 在子句内合并。</div>
+        <div class="note">SFT 超长样本用「保结构截断」：保留问题尾部 + 思考开头 + 收尾段，确保 <span class="mono">[/思考][回复]</span> 和答案一定在，否则模型会学成「一直想、不收敛」。</div>
       </div></div>
       <div class="dstep"><div class="dnum">06</div><div>
         <h4>预训练（A/B/C 三阶段）</h4>
-        <p>1181 步 × 22 万 token = 2.6 亿 token；前 70% 用 seq 512，之后切 1024。每 250 步存一次 ckpt。</p>
+        <p>1072 步 × 22 万 token = 2.36 亿 token；前 70% 用 seq 512，之后切 1024。每 250 步存一次 ckpt。</p>
         <pre class="cb">cd /data
 export HRLM_COMPILE_SCAN=1          <span class="c"># 编译扫描函数，7.1K -&gt; 20.6K tok/s</span>
 export HRLM_CHUNK=32
@@ -965,9 +972,9 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 python -m hrlm.train --stage pretrain --arch hrlm \
   --tok artifacts/tokenizer.json --data artifacts/pretrain \
   --out runs/hrlm_pre --seq-len 512 --micro-batch 32 \
-  --tokens-per-step 220000 --total-tokens 260000000 \
+  --tokens-per-step 220000 --total-tokens 236000000 \
   --log-every 10 --probe-every 50 --save-every 250</pre>
-        <div class="note">4090 实测约 11 秒/步，总时长 ≈ 3.6 小时。日志里会打印 loss / lr / gnorm / 三桶深度分布 / 残差 RMS。</div>
+        <div class="note">A100 40G 实测约 6~8 秒/步，总时长 ≈ 2 小时。日志会打印 loss、每个验证点的 val_loss（判断过拟合）、三桶深度分布、每个专家的 token 占比。</div>
       </div></div>
       <div class="dstep"><div class="dnum">07</div><div>
         <h4>SFT</h4>
@@ -992,7 +999,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
         <pre class="cb">python -m hrlm.train --stage pretrain --arch transformer \
   --tok artifacts/tokenizer.json --data artifacts/pretrain \
   --out runs/tf_pre --seq-len 512 --micro-batch 32 \
-  --tokens-per-step 220000 --total-tokens 260000000</pre>
+  --tokens-per-step 220000 --total-tokens 236000000</pre>
       </div></div>
     </div>
     <div class="block reveal">
@@ -1026,7 +1033,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
               <tbody>
                 <tr><td class="k">Python</td><td class="lj">3.11</td></tr>
                 <tr><td class="k">PyTorch</td><td class="big">2.x + CUDA 12（CPU 仅可做小规模冒烟）</td></tr>
-                <tr><td class="k">显卡</td><td class="big">训练 ≥ 24GB（实测 RTX 4090）；推理 8GB 起</td></tr>
+                <tr><td class="k">显卡</td><td class="big">训练 A100 40G（实测）；推理 8GB 起</td></tr>
                 <tr><td class="k">内存</td><td class="big">≥ 32GB（数据打包阶段需要）</td></tr>
                 <tr><td class="k">磁盘</td><td class="big">≥ 20GB 可用空间</td></tr>
               </tbody>
@@ -1101,7 +1108,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
             <ul>
               <li>大模型 API 月成本 = 日调用 × 30 × <span class="mono" id="costPriceLabel">¥0.012</span></li>
               <li>LingJie 本地月成本 = 硬件摊销 <span class="mono">¥900</span> + 电费 <span class="mono">¥240</span> + 日调用 × 30 × <span class="mono">¥0.0002</span></li>
-              <li>本地部署按单张 RTX 4090（FP16 推理，64.87M 权重仅约 130MB）估算；实际以你的硬件与电价为准。</li>
+              <li>本地部署按单张 A100 40G（FP16 推理，89.67M 权重仅约 180MB）估算；实际以你的硬件与电价为准。</li>
             </ul>
           </div>
         </div>
@@ -1151,8 +1158,8 @@ python -m hrlm.train --stage pretrain --arch hrlm \
     </div>
     <div class="block reveal">
       <div class="next-gen reveal">
-        <p><span class="badge preview" style="vertical-align:2px"><span class="dot"></span>预览版 · 训练中</span> <b>LingJie-Chat-v2-Beta</b>（HRLM v3.2，64.874M）正在单张 4090 上预训练，权重尚未发布。</p>
-        <button class="btn btn-ghost btn-sm" data-goto="paper">HRLM v3.2 论文</button>
+        <p><span class="badge preview" style="vertical-align:2px"><span class="dot"></span>预览版 · 训练中</span> <b>LingJie-Chat-v2-Beta</b>（HRLM v3.3，89.67M）正在单张 4090 上预训练，权重尚未发布。</p>
+        <button class="btn btn-ghost btn-sm" data-goto="paper">HRLM v3.3 论文</button>
       </div>
       <div class="model-count" id="modelCount"></div>
       <div class="model-grid" id="modelGrid"></div>
@@ -1207,7 +1214,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
         <div class="roadmap" style="grid-template-columns:1fr">
           <div class="rm-card"><div class="rm-phase">PHASE 1</div><h4>窄域代码模型</h4><p>LingJie-Code-v1-Pro（202M，JAM 架构）已发布，技术报告 + 权重 + 脚本 + 数据全部公开。</p><span class="rm-status done">已完成</span></div>
           <div class="rm-card"><div class="rm-phase">PHASE 2</div><h4>表示与架构探索</h4><p>v2（AST 括号树）、v3（JAM + MoE）、v4（动作流 + 490.9M 稠密）三次尝试全部失败，复盘已写成「模型探究」。</p><span class="rm-status">已归档 · 失败</span></div>
-          <div class="rm-card"><div class="rm-phase">PHASE 3</div><h4>中文对话模型</h4><p>LingJie-Chat-v2-Beta（HRLM v3.2，64.874M）正在单卡 4090 上预训练，SFT 数据正在重建。</p><span class="rm-status">进行中</span></div>
+          <div class="rm-card"><div class="rm-phase">PHASE 3</div><h4>中文对话模型</h4><p>LingJie-Chat-v2-Beta（HRLM v3.3，89.67M）正在单卡 4090 上预训练，SFT 数据正在重建。</p><span class="rm-status">进行中</span></div>
         </div>
       </div>
     </div>
@@ -1241,7 +1248,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
         </div>
         <div class="page-nav">
           <button class="pn-btn" data-goto="models"><span class="pn-dir">BACK · 返回</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>模型库</span></button>
-          <button class="pn-btn next" data-goto="paper"><span class="pn-dir">NEXT · 下一篇</span><span class="pn-name">HRLM v3.2 论文<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+          <button class="pn-btn next" data-goto="paper"><span class="pn-dir">NEXT · 下一篇</span><span class="pn-name">HRLM v3.3 论文<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
         </div>
       </article>
     </div>
@@ -1266,22 +1273,22 @@ python -m hrlm.train --stage pretrain --arch hrlm \
       <article class="paper-main">
         <div class="reveal">
           <span class="paper-badge">技术预览 · TECHNICAL PREVIEW · v0.9</span>
-          <h1 class="paper-title">HRLM v3.2 × LingJie 数据体系</h1>
-          <p class="paper-subtitle">混合递归语言模型（Hybrid Recursive Language Model）与配套中文数据体系 —— LingJie-Chat-v2-Beta（HRLM v3.2，64.874M）的架构与训练规范。</p>
+          <h1 class="paper-title">HRLM v3.3 × LingJie 数据体系</h1>
+          <p class="paper-subtitle">混合递归语言模型（Hybrid Recursive Language Model）与配套中文数据体系 —— LingJie-Chat-v2-Beta（HRLM v3.3，89.67M）的架构与训练规范。</p>
           <div class="paper-meta"><span>LingJie 团队</span><span>开发者 · 9178nekomc</span><span>架构与参数已冻结</span><span>LingJie.xyz · 2026</span></div>
-          <div class="paper-note">预览版说明：本页整合自团队内部《HRLM v3.2 参数表》《HRLM v3.2 架构规范》《LingJie-SFT-Cot-small 数据格式说明》《LingJie-SFT-Cot-small 数据集介绍》。架构与数据集已开源；<b>LingJie-Chat-v2-Beta 正在单卡 4090 上按本规范训练</b>（预训练进度见「模型探究」），权重与评测结果发布后补充至本页。任何偏离架构规范的实现视为新版本，需重新跑全部回归测试。</div>
+          <div class="paper-note">预览版说明：本页整合自团队内部《HRLM v3.3 参数表》《HRLM v3.3 架构规范》《LingJie-SFT-Cot-small 数据格式说明》《LingJie-SFT-Cot-small 数据集介绍》。架构与数据集已开源；<b>LingJie-Chat-v2-Beta 正在单卡 4090 上按本规范训练</b>（预训练进度见「模型探究」），权重与评测结果发布后补充至本页。任何偏离架构规范的实现视为新版本，需重新跑全部回归测试。</div>
           <div class="p-kpis">
-            <div class="p-kpi"><b>64.863M</b><span>总参数量（规格冻结）</span></div>
-            <div class="p-kpi"><b>64.874M</b><span>实现实测 · +0.02%</span></div>
-            <div class="p-kpi"><b>2.6 亿</b><span>预训练 Token</span></div>
+            <div class="p-kpi"><b>89.67M</b><span>总参数量（规格冻结）</span></div>
+            <div class="p-kpi"><b>≈55M</b><span>每 token 激活参数</span></div>
+            <div class="p-kpi"><b>2.36 亿</b><span>预训练 Token</span></div>
             <div class="p-kpi"><b>11 / 11</b><span>回归测试通过</span></div>
           </div>
         </div>
 
         <section class="p-sec reveal" id="p-abstract">
           <h2>摘要</h2>
-          <p>HRLM v3.2 是一个约 <strong>64.86M 参数</strong>的小型语言模型架构，面向<strong>中文日常对话 + 极简思维链（CoT）</strong>场景。核心思路是「小参数换深计算」：10 个物理块通过最多 3 次递归共享权重；以 SSM 为主干（7 个 GatedDeltaNet 块 + 3 个 Mamba-2 混合注意力块），注意力仅 3 层且滑动窗口 4K；Router 按 token 难度在 {1,2,3} 三档深度间分配算力，并以三阶段课程完成从全深度预热到硬路由收敛的过渡。训练与推理通过显式状态生命周期规范与 11 项回归测试保证严格等价。</p>
-          <p>配套数据体系包括：预训练集 <strong>LingJie-P.T.-small</strong>（2.6 亿 token，四领域中文语料）与 SFT 集 <strong>LingJie-SFT-Cot-small</strong>（647,136 条纯中文带思维链指令数据），并强制设置同参数量、同 token、同 seq_len 的普通 Transformer 对照组以隔离收益来源。基于本规范训练的目标模型为 <strong>LingJie-Chat-v2-Beta</strong>。</p>
+          <p>HRLM v3.3 是一个约 <strong>89.67M 参数</strong>的小型语言模型架构，面向<strong>中文日常对话 + 极简思维链（CoT）</strong>场景。核心思路是「小参数换深计算」：10 个物理块通过最多 3 次递归共享权重；以 SSM 为主干（7 个 GatedDeltaNet 块 + 3 个 Mamba-2 混合注意力块），注意力仅 3 层且滑动窗口 4K；Router 按 token 难度在 {1,2,3} 三档深度间分配算力，并以三阶段课程完成从全深度预热到硬路由收敛的过渡。训练与推理通过显式状态生命周期规范与 11 项回归测试保证严格等价。</p>
+          <p>配套数据体系包括：预训练集 <strong>LingJie-P.T.-small</strong>（2.36 亿 token，四领域中文语料）与 SFT 集 <strong>LingJie-SFT-Cot-small</strong>（647,136 条纯中文带思维链指令数据），并强制设置同参数量、同 token、同 seq_len 的普通 Transformer 对照组以隔离收益来源。基于本规范训练的目标模型为 <strong>LingJie-Chat-v2-Beta</strong>。</p>
           <p><strong>非目标：</strong>复杂推理、代码生成、多模态、超长上下文（&gt;8K）、大规模并行训练，均不属于本架构的设计目标。</p>
         </section>
 
@@ -1324,27 +1331,41 @@ python -m hrlm.train --stage pretrain --arch hrlm \
                 <tr><td class="k">gate_floor</td><td class="lj">0.05</td><td class="big">FFN 门控 δ：SiLU(z)+0.05</td></tr>
                 <tr><td class="k">residual_scale</td><td class="lj">0.158</td><td class="big">(2·10·2.0)^-0.5，Mixer/FFN 各乘一次</td></tr>
                 <tr><td class="k">logit_scale_init</td><td class="lj">√192 ≈ 13.86</td><td class="big">可学习</td></tr>
-                <tr><td class="k">总参数量</td><td class="lj">64.863M</td><td class="big">见参数预算明细</td></tr>
+                <tr><td class="k">总参数量</td><td class="lj">89.67M</td><td class="big">见参数预算明细</td></tr>
               </tbody>
             </table>
           </div></div>
-          <h3>1.2 参数预算明细（核算 64.86M）</h3>
+          <h3>1.2 参数预算明细（核算 89.67M · v3.3 MoE）</h3>
           <div class="tbl-card"><div class="tbl-scroll">
             <table class="tbl" aria-label="参数预算明细">
               <thead><tr><th scope="col">组件</th><th scope="col">计算</th><th scope="col">参数量</th></tr></thead>
               <tbody>
                 <tr><td class="k">因子化嵌入表</td><td class="big">48000 × 192</td><td class="lj">9.216M</td></tr>
-                <tr><td class="k">上投影</td><td class="big">192 × 512</td><td class="lj">0.098M</td></tr>
-                <tr><td class="k">下投影</td><td class="big">512 × 192</td><td class="lj">0.098M</td></tr>
-                <tr><td class="k">7 × GatedDeltaNet</td><td class="big">每块 ≈1.70M</td><td class="lj">11.900M</td></tr>
-                <tr><td class="k">3 × Mamba-2 + Partial-Attn</td><td class="big">每块 ≈2.70M</td><td class="lj">8.100M</td></tr>
-                <tr><td class="k">10 × SwiGLU FFN</td><td class="big">每块 512×2304×3 ≈3.54M</td><td class="lj">35.400M</td></tr>
-                <tr><td class="k">RMSNorm + Router</td><td class="big">16 个 Norm + 1 个 Router</td><td class="lj">0.050M</td></tr>
-                <tr><td class="k">合计</td><td class="big">—</td><td class="lj">64.863M</td></tr>
+                <tr><td class="k">上 / 下投影</td><td class="big">192×576 + 576×192</td><td class="lj">0.221M</td></tr>
+                <tr><td class="k">7 × GatedDeltaNet</td><td class="big">每块 ≈2.00M</td><td class="lj">14.00M</td></tr>
+                <tr><td class="k">3 × Mamba-2 + Partial-Attn</td><td class="big">每块 ≈3.81M</td><td class="lj">11.43M</td></tr>
+                <tr><td class="k">10 × 共享专家</td><td class="big">每块 576×352×3 ≈0.61M</td><td class="lj">6.08M</td></tr>
+                <tr><td class="k">80 × 路由专家</td><td class="big">每块 8 个，共 80 个 ≈0.61M</td><td class="lj">48.66M</td></tr>
+                <tr><td class="k">RMSNorm + Router + 深度路由</td><td class="big">20 Norm + 10 专家路由 + 1 深度路由</td><td class="lj">0.065M</td></tr>
+                <tr><td class="k">合计（总参）</td><td class="big">—</td><td class="lj"><b>89.67M</b></td></tr>
+                <tr><td class="k">合计（每 token 激活）</td><td class="big">共享 1 + 路由 top-2 / 8</td><td class="lj"><b>≈55M</b></td></tr>
               </tbody>
             </table>
           </div></div>
-          <p>占比：FFN 54.5%，Embedding 14.2%，SSM+Attn 30.8%，Norm/Router 0.08%。后续扩容优先调 d_ff，但<strong>不得在 v3.2 上修改</strong>，需新版本。</p>
+          <p>占比：专家 61%，Mixer 28.4%，Embedding 10.5%，Norm/Router 0.07%。每个 token 只走 <strong>1 共享 + 2 路由 = 3/9 个专家</strong>，激活参数约为总参数的 62%，比同参数量稠密模型每 token 省约 38% 计算。</p>
+
+          <h3>1.2.1 v3.2 → v3.3 的三处改动（为什么改）</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="v3.3 改动">
+              <thead><tr><th scope="col">改动</th><th scope="col">v3.2</th><th scope="col">v3.3</th><th scope="col">原因</th></tr></thead>
+              <tbody>
+                <tr><td class="k">分词器</td><td class="big">汉字逐个孤立，1.045 字符/token</td><td class="big">按子句切，<b>1.685 字符/token</b></td><td class="big">孤立后 BPE 无法跨字合并，等于让模型逐字预测，loss 天然虚高</td></tr>
+                <tr><td class="k">FFN</td><td class="big">稠密 SwiGLU，d_ff 2304</td><td class="big">1 共享 + 8 路由专家，top-2</td><td class="big">同算力下容量更大；共享专家保证路由失效时不至于崩</td></tr>
+                <tr><td class="k">宽度</td><td class="big">d_model 512</td><td class="big">d_model 576 / d_ff 2688</td><td class="big">数据量固定时，适度加宽比加深更稳</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <p>防路由塌缩的三条硬约束：<strong>均衡损失权重仅 1e-3</strong>（v3 那次用 0.01，把路由压成均匀分布，等于没路由）、共享专家永远激活、每 50 步打印每个专家的 token 占比并在任一专家 &lt;3% 或 &gt;40% 时告警。</p>
           <h3>1.3 物理块布局</h3>
           <div class="block-strip" aria-label="十个物理块的类型布局">
             <span class="bchip">0<small>GDN</small></span>
@@ -1436,9 +1457,9 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
           <div class="tbl-card"><div class="tbl-scroll">
             <table class="tbl" aria-label="预训练数据集规格">
               <tbody>
-                <tr><td class="k">Token 数</td><td class="lj">260,000,000（2.6 亿）</td></tr>
+                <tr><td class="k">Token 数</td><td class="lj">236,000,000（2.36 亿）</td></tr>
                 <tr><td class="k">seq_len</td><td class="big">512，最后 30% 渐进到 1,024</td></tr>
-                <tr><td class="k">BPE</td><td class="big">Byte-level BPE，于 2.6 亿 token 原始中文文本（去重清洗后）训练</td></tr>
+                <tr><td class="k">BPE</td><td class="big">Byte-level BPE，于 2.36 亿 token 原始中文文本（去重清洗后）训练</td></tr>
                 <tr><td class="k">特殊 token</td><td class="big">&lt;pad&gt; &lt;bos&gt; &lt;eos&gt; [思考] [/思考] [回复] [/回复]</td></tr>
                 <tr><td class="k">标识前缀</td><td class="big">LJPT-xxxxxxxx</td></tr>
                 <tr><td class="k">体系口径</td><td class="big">与 SFT 完全一致：Qwen2.5 tokenizer 口径、规则清洗、zhconv 转简</td></tr>
@@ -1558,7 +1579,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
             </table>
           </div></div>
           <p>补充：同时监控 decay 下界（&lt;0.15）与上界（&gt;0.95）参数占比。</p>
-          <h3>3.3 训练成本（4090 单卡）</h3>
+          <h3>3.3 训练成本（A100 40G 单卡）</h3>
           <div class="tbl-card"><div class="tbl-scroll">
             <table class="tbl" aria-label="训练成本">
               <thead><tr><th scope="col">阶段</th><th scope="col">时间</th></tr></thead>
@@ -1607,10 +1628,10 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
             <li><div><p>禁止用 clamp 实现 SSM decay。用 0.1 + 0.9*sigmoid(w)。</p></div></li>
             <li><div><p>禁止把三轮递归当独立二分类。深度有序，depth=2 执行 1、2 轮，跳过第 3 轮。</p></div></li>
             <li><div><p>禁止测试 1/5 在 BF16 下用统一 &lt;1e-4。FP32 严格，BF16 按分布并检查是否随长度放大。</p></div></li>
-            <li><div><p>禁止在 v3.2 上增加模块或改参数量。修改需新版本 + 重跑全部回归测试。</p></div></li>
+            <li><div><p>禁止在 v3.3 上增加模块或改参数量。修改需新版本 + 重跑全部回归测试。</p></div></li>
           </ol>
           <h3>4.3 强制对照组</h3>
-          <p>同步训练一个同参数量（≈64.9M）、同 token（2.6 亿）、同 seq_len 的普通 Transformer，用于隔离 HRLM 收益来源（递归 / SSM / 动态深度 / 更大 FFN）——否则训练成功也无法归因。</p>
+          <p>同步训练一个同参数量（≈89.7M）、同 token（2.6 亿）、同 seq_len 的普通 Transformer，用于隔离 HRLM 收益来源（递归 / SSM / 动态深度 / 更大 FFN）——否则训练成功也无法归因。</p>
           <div class="tbl-card"><div class="tbl-scroll">
             <table class="tbl" aria-label="对照组配置">
               <thead><tr><th scope="col">参数</th><th scope="col">取值</th><th scope="col">说明</th></tr></thead>
@@ -1621,7 +1642,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
                 <tr><td class="k">d_ff</td><td class="big">2,304</td><td class="big">与 HRLM 相同</td></tr>
                 <tr><td class="k">n_heads</td><td class="big">8</td><td class="big">—</td></tr>
                 <tr><td class="k">位置编码</td><td class="big">标准 RoPE 全维度</td><td class="big">—</td></tr>
-                <tr><td class="k">参数量</td><td class="big">≈64.9M</td><td class="big">与 HRLM 对齐</td></tr>
+                <tr><td class="k">参数量</td><td class="big">≈89.7M</td><td class="big">与 HRLM 对齐</td></tr>
                 <tr><td class="k">训练 Token</td><td class="big">2.6 亿</td><td class="big">与 HRLM 相同</td></tr>
                 <tr><td class="k">seq_len</td><td class="big">512 → 1024</td><td class="big">与 HRLM 相同</td></tr>
                 <tr><td class="k">SFT</td><td class="big">647k × 2 epoch</td><td class="big">与 HRLM 相同</td></tr>
@@ -1630,7 +1651,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
           </div></div>
           <h3>4.4 快速复现清单</h3>
           <ul class="ck-list">
-            <li>按 §1 建模型，参数核对 64.86M</li>
+            <li>按 §1 建模型，参数核对 89.67M</li>
             <li>实现 PhysicalBlock.forward，内部两条残差</li>
             <li>实现 SSM 屏蔽写入</li>
             <li>实现训练路径：阶段 A run_recursive / 阶段 B/C compute_candidates</li>
@@ -1648,9 +1669,9 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
           <div class="target-card">
             <span class="tc-status">即将训练 · 预览</span>
             <h3>LingJie-Chat-v2-Beta</h3>
-            <p>将基于冻结的 HRLM v3.2 架构与 LingJie-P.T.-small × LingJie-SFT-Cot-small 数据体系训练，产出 64.874M 参数的中文对话模型。训练完成后，按站点惯例完整开源权重、训练脚本、模型代码与数据集，并给出手动部署流程。</p>
-            <div class="spec-row"><span class="k">基座架构</span><span class="v">HRLM v3.2 · 64.863M</span></div>
-            <div class="spec-row"><span class="k">预训练</span><span class="v">2.6 亿 token</span></div>
+            <p>将基于冻结的 HRLM v3.3 架构与 LingJie-P.T.-small × LingJie-SFT-Cot-small 数据体系训练，产出 89.67M 参数的中文对话模型。训练完成后，按站点惯例完整开源权重、训练脚本、模型代码与数据集，并给出手动部署流程。</p>
+            <div class="spec-row"><span class="k">基座架构</span><span class="v">HRLM v3.3 · 89.67M</span></div>
+            <div class="spec-row"><span class="k">预训练</span><span class="v">2.36 亿 token</span></div>
             <div class="spec-row"><span class="k">SFT</span><span class="v">647,136 × 2 epoch</span></div>
             <div class="spec-row"><span class="k">对照组</span><span class="v">同规模普通 Transformer</span></div>
             <div class="spec-row"><span class="k">发布物</span><span class="v">权重 + 脚本 + 代码 + 数据</span></div>
@@ -1661,11 +1682,11 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
         <section class="p-sec reveal" id="p-cite">
           <h2>引用与资源</h2>
           <div class="code">LingJie 团队（开发者：9178nekomc）.
-HRLM v3.2 × LingJie 数据体系技术预览（预览版 v0.9）.
+HRLM v3.3 × LingJie 数据体系技术预览（预览版 v0.9）.
 LingJie.xyz, 2026.</div>
           <h3>一句话核对</h3>
           <div class="code">V=48K，d_emb=192，d_model=512，d_ff=2304，d_state=128，10 块（attn 在 2/5/8），
-递归 3 次，窗口 4K，RoPE 0.25，总参 64.86M；预训练 2.6 亿 Token（220K token/batch，
+递归 3 次，窗口 4K，RoPE 0.25，总参 89.67M；预训练 2.6 亿 Token（220K token/batch，
 1182 步，lr 3e-4，warmup 300）；SFT 647k × 2 epoch（batch 64，lr 1e-4，warmup 50）；
 Router A/B/C 三阶段；scale=0.158；11 项回归测试全过再起跑。</div>
           <div class="paper-links">
@@ -1707,7 +1728,7 @@ Router A/B/C 三阶段；scale=0.158；11 项回归测试全过再起跑。</div
         <h4>更多</h4>
         <button data-goto="cost">成本计算器</button>
         <button data-goto="models">窄域模型库</button>
-        <button data-goto="paper">技术论文 · HRLM v3.2</button>
+        <button data-goto="paper">技术论文 · HRLM v3.3</button>
         <button data-goto="about">关于开发者</button>
         <a href="https://github.com/9178nekomc" target="_blank" rel="noopener">GitHub · 9178nekomc</a>
       </div>
@@ -1957,8 +1978,8 @@ $('#archSteps').addEventListener('keydown', function(e){
 renderArch();
 /* SECTION: terminal */
 var TERM_MODELS = [
-  {id:'pretrain', label:'预训练', cmd:'HRLM_COMPILE_SCAN=1 python -m hrlm.train --stage pretrain --arch hrlm --tok artifacts/tokenizer.json --data artifacts/pretrain --out runs/hrlm_pre --seq-len 512 --micro-batch 32 --tokens-per-step 220000 --total-tokens 260000000', dataset:'artifacts/pretrain（3.78 亿 token）', metric:'1181 步 · 2.6 亿 token · 20.6K token/s', time:'≈ 3.6 小时', vram:'≈ 8 GB'},
-  {id:'sft', label:'SFT', cmd:'python -m hrlm.train --stage sft --arch hrlm --tok artifacts/tokenizer.json --data artifacts/sft --out runs/hrlm_sft --sft-batch 64 --epochs 2 --init runs/hrlm_pre/ckpt_latest.pt', dataset:'artifacts/sft（647,136 条）', metric:'loss 只算 [思考]…[/回复] 段', time:'≈ 1.5 小时', vram:'≈ 8 GB'}
+  {id:'pretrain', label:'预训练', cmd:'HRLM_COMPILE_SCAN=1 python -m hrlm.train --stage pretrain --arch hrlm --tok artifacts/tokenizer.json --data artifacts/pretrain --out runs/hrlm_pre --seq-len 512 --micro-batch 32 --tokens-per-step 220000 --total-tokens 236000000', dataset:'artifacts/pretrain（2.36 亿 token）', metric:'1072 步 · 2.36 亿 token · 89.67M MoE', time:'≈ 2 小时（A100）', vram:'≈ 12 GB'},
+  {id:'sft', label:'SFT', cmd:'python -m hrlm.train --stage sft --arch hrlm --tok artifacts/tokenizer.json --data artifacts/sft --out runs/hrlm_sft --sft-batch 64 --epochs 2 --init runs/hrlm_pre/ckpt_latest.pt', dataset:'artifacts/sft_v2（647,136 条 · 1.67 亿 token）', metric:'loss 只算 [思考]…[/回复] 段', time:'≈ 1.2 小时（A100）', vram:'≈ 12 GB'}
 ];
 var termModel = TERM_MODELS[0], termTimers = [], termStarted = false;
 var termBody = $('#termBody'), termCmd = $('#termCmd'), termStatus = $('#termStatus');
@@ -1996,8 +2017,8 @@ function termFinish(){
 function termEmit(){
   var m = termModel;
   var lines = [
-    ['dim','arch hrlm | params 64.8741M | device cuda | vocab 48000'],
-    ['info','pretrain: 1181 steps, 220000 tok/step, seq 512 -> 1024@70%'],
+    ['dim','arch hrlm | params 89.6693M | device cuda | vocab 48000'],
+    ['info','pretrain: 1072 steps, 220000 tok/step, seq 512 -> 1024@70%'],
     ['ok','数据 '+m.dataset+' · 已打包（uint16 memmap）'],
     ['dim','step    10 | loss 8.9302 | lr 3.30e-05 | gnorm 3.114 | A'],
     ['dim','step    50 | loss 7.4188 | lr 1.30e-04 | gnorm 2.877 | A'],
@@ -2032,7 +2053,7 @@ function runTerm(){
   var cmd = termCmdText();
   if(reduced){
     termCmd.textContent = cmd;
-    termLine('dim','环境检查 · Python 3.11 · torch 2.x · 单卡 RTX 4090');
+    termLine('dim','环境检查 · Python 3.11 · torch 2.x · 单卡 A100 40G');
     termLine('ok','代码 / 脚本 / 数据集 / 权重全部就绪');
     termLine('data',termModel.metric);
     termFinish();
@@ -2132,10 +2153,10 @@ var MODELS = [
    metric:'验收 6/14（42.9%），节点覆盖 20/40；AST 分类 loss 3.69 → 0.0047。',
    desc:'表示层换了、格式学会了，但能力层没有：简单需求会生成空 Module，Intent 池化点在训练与推理时不匹配。'},
   {id:'chat-v2-beta', name:'LingJie-Chat-v2-Beta', status:'preview',
-   statusText:'预览版 · 训练中', dom:'中文对话 + 基础数学 CoT', catLabel:'HRLM v3.2',
-   params:'64.874M', ctx:'8K（滑窗 4K）', size:'未发布（训练中）', quant:'—',
-   hw:'单卡 RTX 4090',
-   dataset:'2.6 亿 token 预训练 + 647,136 条 SFT',
+   statusText:'预览版 · 训练中', dom:'中文对话 + 基础数学 CoT', catLabel:'HRLM v3.3 MoE',
+   params:'89.67M', ctx:'8K（滑窗 4K）', size:'未发布（训练中）', quant:'—',
+   hw:'单卡 A100 40G',
+   dataset:'2.36 亿 token 预训练 + 647,136 条 SFT',
    dataDesc:'预训练 1,184,107 篇文档；SFT 每条 assistant 都带 [思考] 块，loss 只算思考与回答。',
    metric:'架构已冻结；11 项回归测试全过（缓存一致性 3.1e-6、候选完整性 0.0、prefill 5.2e-5）。',
    desc:'10 个物理块 × 最多 3 轮递归权重共享；7 个 GatedDeltaNet + 3 个 Mamba-2/部分 RoPE 滑窗注意力；Router 按 token 难度分配 1~3 轮深度。'}
