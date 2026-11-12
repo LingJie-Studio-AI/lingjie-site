@@ -1562,7 +1562,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
               </tbody>
             </table>
           </div></div>
-          <p><strong>Batch 语义：</strong>Global batch 恒为 220K token。seq_len=512 → 约 430 序列/步；seq_len=1024 → 约 215 序列/步。总 token 数 2.6 亿不变，总步数 1,182 不变。</p>
+          <p><strong>Batch 语义：</strong>Global batch 恒为 220K token。seq_len=512 → 约 430 序列/步；seq_len=1024 → 约 215 序列/步。总 token 数 2.36 亿不变，总步数 1,182 不变。</p>
           <h3>3.2 监控阈值（前 5% 步数判断）</h3>
           <div class="tbl-card"><div class="tbl-scroll">
             <table class="tbl" aria-label="训练监控阈值">
@@ -1631,7 +1631,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
             <li><div><p>禁止在 v3.3 上增加模块或改参数量。修改需新版本 + 重跑全部回归测试。</p></div></li>
           </ol>
           <h3>4.3 强制对照组</h3>
-          <p>同步训练一个同参数量（≈89.7M）、同 token（2.6 亿）、同 seq_len 的普通 Transformer，用于隔离 HRLM 收益来源（递归 / SSM / 动态深度 / 更大 FFN）——否则训练成功也无法归因。</p>
+          <p>同步训练一个同参数量（≈89.7M）、同 token（2.36 亿）、同 seq_len 的普通 Transformer，用于隔离 HRLM 收益来源（递归 / SSM / 动态深度 / 更大 FFN）——否则训练成功也无法归因。</p>
           <div class="tbl-card"><div class="tbl-scroll">
             <table class="tbl" aria-label="对照组配置">
               <thead><tr><th scope="col">参数</th><th scope="col">取值</th><th scope="col">说明</th></tr></thead>
@@ -1643,7 +1643,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
                 <tr><td class="k">n_heads</td><td class="big">8</td><td class="big">—</td></tr>
                 <tr><td class="k">位置编码</td><td class="big">标准 RoPE 全维度</td><td class="big">—</td></tr>
                 <tr><td class="k">参数量</td><td class="big">≈89.7M</td><td class="big">与 HRLM 对齐</td></tr>
-                <tr><td class="k">训练 Token</td><td class="big">2.6 亿</td><td class="big">与 HRLM 相同</td></tr>
+                <tr><td class="k">训练 Token</td><td class="big">2.36 亿</td><td class="big">与 HRLM 相同</td></tr>
                 <tr><td class="k">seq_len</td><td class="big">512 → 1024</td><td class="big">与 HRLM 相同</td></tr>
                 <tr><td class="k">SFT</td><td class="big">647k × 2 epoch</td><td class="big">与 HRLM 相同</td></tr>
               </tbody>
@@ -1657,7 +1657,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
             <li>实现训练路径：阶段 A run_recursive / 阶段 B/C compute_candidates</li>
             <li>实现推理路径：InferenceState + step</li>
             <li>跑 11 项回归测试，FP32 先过再切 BF16</li>
-            <li>预训练 2.6 亿 Token，监控 §3.2 指标</li>
+            <li>预训练 2.36 亿 Token，监控 §3.2 指标</li>
             <li>SFT 647k × 2 epoch，第 1 epoch 后评估</li>
             <li>同步跑普通 Transformer 对照组</li>
             <li>对比：loss / 意图准确率 / 推理延迟 / 4K 长上下文</li>
