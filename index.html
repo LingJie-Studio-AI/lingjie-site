@@ -552,7 +552,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
 <div id="announce" role="region" aria-label="训练进度提示">
   <button class="ann-main" id="annOpen">
     <span class="ann-tag">训练中</span>
-    <span class="ann-text">LingJie 团队自研 <b>HRLM v3.3</b> × LingJie 数据集已开源，我们将会使用它训练出 <b>LingJie-Chat-v2-Beta</b>（89.67M），目前正在单卡 4090 上预训练，点击查看模型、数据集与架构详情</span>
+    <span class="ann-text">LingJie 团队自研 <b>HRLM v3.3</b> × LingJie 数据集已开源，我们将会使用它训练出 <b>LingJie-Chat-v2-Beta</b>（89.67M），目前正在单卡 A100 40G 上预训练，点击查看模型、数据集与架构详情</span>
     <span class="ann-cta">查看论文<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
   </button>
   <button class="ann-close" id="annClose" aria-label="关闭提示">
@@ -718,7 +718,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
         <div class="trio-item">
           <div class="t-idx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>ACCESSIBLE</div>
           <h3>用得上</h3>
-          <p>89.67M 参数、10 块 3 轮递归的架构，一张消费级显卡就能训练与推理。不需要排队等 API，不需要机房，智能就在你的设备里。</p>
+          <p>89.67M 参数、89.67M 单卡可训的 MoE 架构，一张显卡就能训练与推理。不需要排队等 API，不需要机房，智能就在你的设备里。</p>
         </div>
         <div class="trio-item">
           <div class="t-idx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M15.5 9.2c-.8-1-2-1.5-3.5-1.5-2 0-3.2 1-3.2 2.3 0 3 6.8 1.4 6.8 4.4 0 1.4-1.4 2.4-3.6 2.4-1.7 0-3-.6-3.8-1.7"/></svg>AFFORDABLE</div>
@@ -798,7 +798,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
           <div class="tbl-scroll">
             <table class="tbl" aria-label="架构设计目标">
               <tbody>
-                <tr><td class="k">参数预算</td><td class="lj">89.67M（规格 89.67M，+0.02%）</td></tr>
+                <tr><td class="k">参数预算</td><td class="lj">89.67M（实测 · MoE 1 共享 + 8 路由）</td></tr>
                 <tr><td class="k">上下文</td><td class="lj">训练 512 → 1024；注意力滑窗 4096</td></tr>
                 <tr><td class="k">训练硬件</td><td class="lj">单张 A100 40G</td></tr>
                 <tr><td class="k">词表</td><td class="lj">48,000（字节级 BPE，含 7 个特殊符）</td></tr>
@@ -1158,7 +1158,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
     </div>
     <div class="block reveal">
       <div class="next-gen reveal">
-        <p><span class="badge preview" style="vertical-align:2px"><span class="dot"></span>预览版 · 训练中</span> <b>LingJie-Chat-v2-Beta</b>（HRLM v3.3，89.67M）正在单张 4090 上预训练，权重尚未发布。</p>
+        <p><span class="badge preview" style="vertical-align:2px"><span class="dot"></span>预览版 · 训练中</span> <b>LingJie-Chat-v2-Beta</b>（HRLM v3.3，89.67M MoE）正在单张 A100 40G 上预训练，权重尚未发布。</p>
         <button class="btn btn-ghost btn-sm" data-goto="paper">HRLM v3.3 论文</button>
       </div>
       <div class="model-count" id="modelCount"></div>
@@ -1214,7 +1214,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
         <div class="roadmap" style="grid-template-columns:1fr">
           <div class="rm-card"><div class="rm-phase">PHASE 1</div><h4>窄域代码模型</h4><p>LingJie-Code-v1-Pro（202M，JAM 架构）已发布，技术报告 + 权重 + 脚本 + 数据全部公开。</p><span class="rm-status done">已完成</span></div>
           <div class="rm-card"><div class="rm-phase">PHASE 2</div><h4>表示与架构探索</h4><p>v2（AST 括号树）、v3（JAM + MoE）、v4（动作流 + 490.9M 稠密）三次尝试全部失败，复盘已写成「模型探究」。</p><span class="rm-status">已归档 · 失败</span></div>
-          <div class="rm-card"><div class="rm-phase">PHASE 3</div><h4>中文对话模型</h4><p>LingJie-Chat-v2-Beta（HRLM v3.3，89.67M）正在单卡 4090 上预训练，SFT 数据正在重建。</p><span class="rm-status">进行中</span></div>
+          <div class="rm-card"><div class="rm-phase">PHASE 3</div><h4>中文对话模型</h4><p>LingJie-Chat-v2-Beta（HRLM v3.3，89.67M MoE）正在单卡 A100 40G 上预训练。</p><span class="rm-status">进行中</span></div>
         </div>
       </div>
     </div>
@@ -1276,7 +1276,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
           <h1 class="paper-title">HRLM v3.3 × LingJie 数据体系</h1>
           <p class="paper-subtitle">混合递归语言模型（Hybrid Recursive Language Model）与配套中文数据体系 —— LingJie-Chat-v2-Beta（HRLM v3.3，89.67M）的架构与训练规范。</p>
           <div class="paper-meta"><span>LingJie 团队</span><span>开发者 · 9178nekomc</span><span>架构与参数已冻结</span><span>LingJie.xyz · 2026</span></div>
-          <div class="paper-note">预览版说明：本页整合自团队内部《HRLM v3.3 参数表》《HRLM v3.3 架构规范》《LingJie-SFT-Cot-small 数据格式说明》《LingJie-SFT-Cot-small 数据集介绍》。架构与数据集已开源；<b>LingJie-Chat-v2-Beta 正在单卡 4090 上按本规范训练</b>（预训练进度见「模型探究」），权重与评测结果发布后补充至本页。任何偏离架构规范的实现视为新版本，需重新跑全部回归测试。</div>
+          <div class="paper-note">预览版说明：本页整合自团队内部《HRLM v3.3 参数表》《HRLM v3.3 架构规范》《LingJie-SFT-Cot-small 数据格式说明》《LingJie-SFT-Cot-small 数据集介绍》。架构与数据集已开源；<b>LingJie-Chat-v2-Beta 正在单卡 A100 40G 上按本规范训练</b>（预训练进度见「模型探究」），权重与评测结果发布后补充至本页。任何偏离架构规范的实现视为新版本，需重新跑全部回归测试。</div>
           <div class="p-kpis">
             <div class="p-kpi"><b>89.67M</b><span>总参数量（规格冻结）</span></div>
             <div class="p-kpi"><b>≈55M</b><span>每 token 激活参数</span></div>
@@ -1686,7 +1686,7 @@ HRLM v3.3 × LingJie 数据体系技术预览（预览版 v0.9）.
 LingJie.xyz, 2026.</div>
           <h3>一句话核对</h3>
           <div class="code">V=48K，d_emb=192，d_model=512，d_ff=2304，d_state=128，10 块（attn 在 2/5/8），
-递归 3 次，窗口 4K，RoPE 0.25，总参 89.67M；预训练 2.6 亿 Token（220K token/batch，
+递归 3 次，窗口 4K，RoPE 0.25，总参 89.67M；预训练 2.36 亿 Token（220K token/batch，
 1182 步，lr 3e-4，warmup 300）；SFT 647k × 2 epoch（batch 64，lr 1e-4，warmup 50）；
 Router A/B/C 三阶段；scale=0.158；11 项回归测试全过再起跑。</div>
           <div class="paper-links">
