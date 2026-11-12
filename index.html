@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <title>LingJie · 探索 AGI 的另外一面</title>
-<meta name="description" content="LingJie 是专注于窄域的小模型训练团队：创新架构、降本增效，权重 / 训练脚本 / 模型代码 / 训练数据集完整开源，一条命令就能复现。开发者：9178nekomc。">
+<meta name="description" content="LingJie 是专注于窄域的小模型训练团队：创新架构、降本增效，权重 / 训练脚本 / 模型代码 / 训练数据集完整开源，手动流程全部公开。开发者：9178nekomc。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect x='2' y='2' width='24' height='24' rx='7' fill='none' stroke='%2316181d' stroke-width='2'/%3E%3Cpath d='M14 6.5C17 10 17 18 14 21.5C11 18 11 10 14 6.5Z' fill='%230e7a4f'/%3E%3C/svg%3E">
 <style>
 /* SECTION: tokens */
@@ -705,7 +705,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
               <tr><td class="k">训练硬件</td><td class="big">GPU 集群</td><td class="lj">单张消费级显卡</td></tr>
               <tr><td class="k">领域表现</td><td class="big">广而泛</td><td class="lj">窄而精</td></tr>
               <tr><td class="k">开源程度</td><td class="big">多数闭源</td><td class="lj">四大件 100% 开源</td></tr>
-              <tr><td class="k">复现门槛</td><td class="big">几乎无法复现</td><td class="lj">一条命令</td></tr>
+              <tr><td class="k">复现门槛</td><td class="big">几乎无法复现</td><td class="lj">按步骤手动部署</td></tr>
               <tr><td class="k">使用成本</td><td class="big">按次计费，持续支出</td><td class="lj">一次训练，推理近乎免费</td></tr>
             </tbody>
           </table>
@@ -890,7 +890,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
         <ol class="num-list">
           <li><div><h4>Fork 主仓库</h4><p>从 github.com/9178nekomc/LingJie-Code-v1-Beta 拉取代码，本地跑通一次复现。</p></div></li>
           <li><div><h4>提交你的窄域</h4><p>新的领域模板、数据集或评测集，按数据卡规范补齐来源说明。</p></div></li>
-          <li><div><h4>附上复现报告</h4><p>Pull Request 附带一条命令的复现结果，审核通过即合并发布。</p></div></li>
+          <li><div><h4>附上复现报告</h4><p>Pull Request 附带完整的部署日志，审核通过即合并发布。</p></div></li>
         </ol>
         <div style="margin-top:18px"><a class="btn btn-ghost" href="https://github.com/9178nekomc" target="_blank" rel="noopener">前往 GitHub<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div>
       </div>
@@ -1280,7 +1280,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
 
         <section class="p-sec reveal" id="p-abstract">
           <h2>摘要</h2>
-          <p>HRLM v3.2 是一个约 <strong>64.86M 参数</strong>的小型语言模型架构，面向<strong>中文日常对话 + 极简思维链（CoT）</strong>场景。核心思路是「小参数换深计算」：10 个物理块通过最多 3 次递归共享权重；以 SSM 为主干（7 个 GatedDeltaNet 块 + 3 个 Mamba-2 混合注意力块），注意力仅 3 层且滑动窗口 4K；Router 按 token 难度在 {1,2,3} 三档深度间分配算力，并以三阶段课程完成从全深度预热到硬路由收敛的过渡。训练与推理通过显式状态生命周期规范与 8 项回归测试保证严格等价。</p>
+          <p>HRLM v3.2 是一个约 <strong>64.86M 参数</strong>的小型语言模型架构，面向<strong>中文日常对话 + 极简思维链（CoT）</strong>场景。核心思路是「小参数换深计算」：10 个物理块通过最多 3 次递归共享权重；以 SSM 为主干（7 个 GatedDeltaNet 块 + 3 个 Mamba-2 混合注意力块），注意力仅 3 层且滑动窗口 4K；Router 按 token 难度在 {1,2,3} 三档深度间分配算力，并以三阶段课程完成从全深度预热到硬路由收敛的过渡。训练与推理通过显式状态生命周期规范与 11 项回归测试保证严格等价。</p>
           <p>配套数据体系包括：预训练集 <strong>LingJie-P.T.-small</strong>（2.6 亿 token，四领域中文语料）与 SFT 集 <strong>LingJie-SFT-Cot-small</strong>（647,136 条纯中文带思维链指令数据），并强制设置同参数量、同 token、同 seq_len 的普通 Transformer 对照组以隔离收益来源。基于本规范训练的目标模型为 <strong>LingJie-Chat-v2-Beta</strong>。</p>
           <p><strong>非目标：</strong>复杂推理、代码生成、多模态、超长上下文（&gt;8K）、大规模并行训练，均不属于本架构的设计目标。</p>
         </section>
@@ -1648,7 +1648,7 @@ new_state = torch.where(token_mask.bool(), candidate, state)</div>
           <div class="target-card">
             <span class="tc-status">即将训练 · 预览</span>
             <h3>LingJie-Chat-v2-Beta</h3>
-            <p>将基于冻结的 HRLM v3.2 架构与 LingJie-P.T.-small × LingJie-SFT-Cot-small 数据体系训练，产出约 65M 参数的中文对话模型。训练完成后，按站点惯例完整开源权重、训练脚本、模型代码与数据集，并提供一条命令复现。</p>
+            <p>将基于冻结的 HRLM v3.2 架构与 LingJie-P.T.-small × LingJie-SFT-Cot-small 数据体系训练，产出 64.874M 参数的中文对话模型。训练完成后，按站点惯例完整开源权重、训练脚本、模型代码与数据集，并给出手动部署流程。</p>
             <div class="spec-row"><span class="k">基座架构</span><span class="v">HRLM v3.2 · 64.863M</span></div>
             <div class="spec-row"><span class="k">预训练</span><span class="v">2.6 亿 token</span></div>
             <div class="spec-row"><span class="k">SFT</span><span class="v">647,136 × 2 epoch</span></div>
