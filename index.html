@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>LingJie · 探索 AGI 的另外一面</title>
+<meta name="description" content="LingJie 是专注于窄域的小模型训练团队：创新架构、降本增效，权重 / 训练脚本 / 模型代码 / 训练数据集完整开源，一条命令就能复现。开发者：9178nekomc。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect x='2' y='2' width='24' height='24' rx='7' fill='none' stroke='%2316181d' stroke-width='2'/%3E%3Cpath d='M14 6.5C17 10 17 18 14 21.5C11 18 11 10 14 6.5Z' fill='%230e7a4f'/%3E%3C/svg%3E">
+<style>
+/* SECTION: tokens */
+:root{
+  --paper:#ffffff; --paper2:#f7f7f5; --paper3:#efefec;
+  --ink:#16181d; --ink2:#4a4d55; --ink3:#8a8d94;
+  --line:#e6e6e2; --line2:#d9d9d3;
+  --accent:#0e7a4f; --accent-soft:#e9f3ee;
+  --warn:#b7791f; --danger:#c2453a;
+  --term-bg:#16181d; --term-line:#2a2d34; --term-text:#d8dadf; --term-dim:#767b85; --term-ok:#7fd6a8; --term-data:#d9a441;
+  --nav-h:68px;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Consolas,monospace;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --shadow-sm:0 1px 2px rgba(22,24,29,.05);
+  --shadow-md:0 10px 30px rgba(22,24,29,.08);
+}
+/* SECTION: base */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scrollbar-color:#cfcfc8 var(--paper2);scrollbar-width:thin}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+body.lock{overflow:hidden}
+::selection{background:var(--accent-soft);color:var(--ink)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--paper2)}
+::-webkit-scrollbar-thumb{background:#cfcfc8;border-radius:8px;border:2px solid var(--paper2)}
+::-webkit-scrollbar-thumb:hover{background:#b4b4ac}
+img,svg,canvas{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+h1,h2,h3,h4{margin:0;line-height:1.28;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+ul{margin:0;padding:0;list-style:none}
+.wrap{width:min(1120px,100% - 48px);margin-inline:auto}
+.mono{font-family:var(--mono)}
+.ic{width:18px;height:18px;flex-shrink:0}
+.skip{position:absolute;left:-999px;top:8px;z-index:200;background:var(--ink);color:#fff;padding:12px 18px;border-radius:8px}
+.skip:focus{left:8px}
+/* SECTION: nav */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);display:flex;align-items:center;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-inner{width:min(1180px,100% - 40px);margin-inline:auto;display:flex;align-items:center;gap:6px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;letter-spacing:-.01em;padding:8px 4px;flex-shrink:0}
+.brand svg{width:26px;height:26px}
+.brand .tld{font-family:var(--mono);font-size:.72rem;color:var(--ink3);font-weight:400;margin-left:-4px}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto}
+.nav-link{position:relative;color:var(--ink2);font-size:.88rem;padding:10px 12px;border-radius:8px;min-height:44px;display:inline-flex;align-items:center;background:none;border:none;transition:color .2s,background .2s;white-space:nowrap}
+.nav-link:hover{color:var(--ink);background:var(--paper2)}
+.nav-link.active{color:var(--ink);font-weight:600;background:var(--paper2)}
+.nav-link.active::after{content:"";position:absolute;left:12px;right:12px;bottom:5px;height:2px;background:var(--accent);border-radius:2px}
+.nav-cta{margin-left:10px}
+#navToggle{display:none;margin-left:auto;width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--paper);align-items:center;justify-content:center}
+#navToggle .i-close{display:none}
+#navbar.menu-open #navToggle .i-menu{display:none}
+#navbar.menu-open #navToggle .i-close{display:block}
+/* SECTION: buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:10px;padding:12px 22px;font-size:.94rem;font-weight:600;border:1px solid transparent;min-height:48px;transition:background .2s,border-color .2s,color .2s,box-shadow .2s}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#000;box-shadow:var(--shadow-md)}
+.btn-ghost{background:var(--paper);border-color:var(--line2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink3);box-shadow:var(--shadow-sm)}
+.btn-sm{min-height:44px;padding:10px 18px;font-size:.88rem}
+.btn-block{width:100%}
+.btn.copied{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.icon-btn{width:44px;height:44px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line2);border-radius:10px;background:var(--paper);transition:border-color .2s,background .2s,color .2s}
+.icon-btn:hover{border-color:var(--ink3)}
+.icon-btn.copied{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+/* SECTION: views & router */
+main{padding-top:var(--nav-h)}
+.two-col > *,.hero-grid > *,.repro-grid > *,.cost-card > *,.open-grid > *,.entry-grid > *,.roadmap > *,.foot-grid > *,.trio > *,.arch-points > *{min-width:0}
+.view{display:none;min-height:calc(100vh - var(--nav-h))}
+.view.active{display:block;animation:viewIn .4s ease}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.view-body{padding:64px 0 40px}
+.view-head{max-width:46em;margin-bottom:44px}
+.sec-label{font-family:var(--mono);font-size:.76rem;letter-spacing:.14em;color:var(--ink3);margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.sec-label::before{content:"";width:28px;height:1px;background:var(--accent)}
+.view-head h1,.view-head h2{font-size:clamp(1.8rem,3.4vw,2.5rem);letter-spacing:-.02em}
+.mark{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2.5px;text-underline-offset:6px}
+.view-sub{margin-top:16px;color:var(--ink2)}
+.block{margin-bottom:56px}
+.block-title{font-size:1.15rem;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.block-title::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:2px;flex-shrink:0}
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.06s}.reveal.d2{transition-delay:.12s}.reveal.d3{transition-delay:.18s}
+/* page prev/next */
+.page-nav{display:flex;gap:14px;justify-content:space-between;border-top:1px solid var(--line);padding:26px 0 54px;flex-wrap:wrap}
+.pn-btn{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;padding:14px 20px;min-height:64px;min-width:200px;border:1px solid var(--line);border-radius:12px;background:var(--paper);transition:border-color .2s,box-shadow .2s}
+.pn-btn:hover{border-color:var(--ink3);box-shadow:var(--shadow-sm)}
+.pn-btn.next{align-items:flex-end;text-align:right;margin-left:auto}
+.pn-dir{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink3)}
+.pn-name{font-weight:600;font-size:.96rem;display:flex;align-items:center;gap:8px}
+.pn-name .ic{width:15px;height:15px;color:var(--accent)}
+/* SECTION: home */
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center;margin-bottom:64px}
+.hero h1{font-size:clamp(2.4rem,5vw,3.6rem);font-weight:750;letter-spacing:-.025em;line-height:1.18}
+.hero-lede{margin-top:22px;color:var(--ink2);font-size:1.02rem;max-width:33em}
+.hero-lede strong{color:var(--ink);font-weight:600}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:44px;border-top:1px solid var(--line)}
+.stat{padding:16px 14px 0 0}
+.stat + .stat{padding-left:18px;border-left:1px solid var(--line)}
+.stat b{display:block;font-size:1.25rem;font-weight:700;letter-spacing:-.01em}
+.stat span{font-size:.76rem;color:var(--ink3)}
+.spec-card{border:1px solid var(--line);border-radius:14px;background:var(--paper);box-shadow:var(--shadow-sm);overflow:hidden}
+.spec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line)}
+.spec-head h2{font-size:.98rem;font-family:var(--mono);font-weight:600}
+.spec-tag{font-family:var(--mono);font-size:.66rem;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:4px 10px;white-space:nowrap}
+.spec-rows{padding:4px 22px}
+.spec-row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:.87rem}
+.spec-row:last-child{border-bottom:none}
+.spec-row .k{color:var(--ink3)}
+.spec-row .v{font-family:var(--mono);font-weight:600;text-align:right}
+.spec-cmd{display:flex;align-items:center;gap:10px;background:var(--paper2);border-top:1px solid var(--line);padding:12px 14px 12px 22px}
+.spec-cmd code{flex:1;min-width:0;font-family:var(--mono);font-size:.8rem;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.spec-cmd code::-webkit-scrollbar{display:none}
+.spec-cmd .prompt{color:var(--accent);font-family:var(--mono)}
+.spec-note{padding:11px 22px;font-size:.73rem;color:var(--ink3);border-top:1px solid var(--line)}
+.entry-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.entry-card{display:flex;flex-direction:column;gap:10px;text-align:left;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--paper);min-height:150px;transition:border-color .2s,box-shadow .2s,transform .2s}
+.entry-card:hover{border-color:var(--line2);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.entry-card .ec-top{display:flex;align-items:center;justify-content:space-between}
+.entry-card .ec-icon{width:40px;height:40px;border-radius:10px;background:var(--paper2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.entry-card .ec-arrow{color:var(--ink3);transition:color .2s,transform .2s}
+.entry-card:hover .ec-arrow{color:var(--accent);transform:translateX(3px)}
+.entry-card h3{font-size:1.05rem}
+.entry-card p{color:var(--ink2);font-size:.85rem;flex:1}
+.entry-card .ec-idx{font-family:var(--mono);font-size:.64rem;color:var(--ink3);letter-spacing:.1em}
+.dev-strip{display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:20px 26px;background:var(--paper2);margin-top:40px}
+.dev-strip .ds-txt{display:flex;align-items:center;gap:14px;min-width:0}
+.dev-strip .ds-txt p{font-size:.9rem;color:var(--ink2)}
+.dev-strip .ds-txt b{color:var(--ink);font-family:var(--mono);font-weight:600}
+.dev-strip .ds-actions{display:flex;gap:10px;flex-wrap:wrap}
+/* SECTION: tables & prose */
+.tbl-card{border:1px solid var(--line);border-radius:14px;background:var(--paper);overflow:hidden;box-shadow:var(--shadow-sm)}
+.tbl-scroll{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem;min-width:480px}
+.tbl th,.tbl td{padding:14px 20px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl thead th{font-size:.78rem;color:var(--ink3);font-weight:600;background:var(--paper2)}
+.tbl thead th.lj{color:var(--accent)}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl td.k{font-family:var(--mono);font-size:.76rem;color:var(--ink3);white-space:nowrap}
+.tbl td.big{color:var(--ink2)}
+.tbl td.lj{font-weight:600}
+.prose p{color:var(--ink2);margin-bottom:14px;font-size:.96rem}
+.prose p strong{color:var(--ink)}
+.quote{margin-top:22px;padding:18px 22px;border-left:2px solid var(--accent);background:var(--paper2);border-radius:0 10px 10px 0;font-size:.96rem}
+.two-col{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:start}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line2)}
+.trio-item{padding:28px 26px 0 0}
+.trio-item + .trio-item{padding-left:26px;border-left:1px solid var(--line)}
+.trio-item .t-idx{font-family:var(--mono);font-size:.7rem;color:var(--ink3);display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.trio-item .t-idx .ic{color:var(--accent)}
+.trio-item h3{font-size:1.2rem;margin-bottom:10px}
+.trio-item p{color:var(--ink2);font-size:.9rem}
+.qa{border:1px solid var(--line);border-radius:12px;background:var(--paper);overflow:hidden}
+.qa details{border-bottom:1px solid var(--line)}
+.qa details:last-child{border-bottom:none}
+.qa summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 22px;min-height:56px;font-weight:600;font-size:.94rem;cursor:pointer;list-style:none;transition:background .2s}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary:hover{background:var(--paper2)}
+.qa summary .ic{color:var(--ink3);transition:transform .25s}
+.qa details[open] summary .ic{transform:rotate(45deg);color:var(--accent)}
+.qa .qa-a{padding:0 22px 18px;color:var(--ink2);font-size:.9rem}
+.num-list{counter-reset:n;display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:14px;background:var(--paper);overflow:hidden}
+.num-list li{display:flex;gap:18px;padding:20px 24px;border-bottom:1px solid var(--line);align-items:flex-start}
+.num-list li:last-child{border-bottom:none}
+.num-list li::before{counter-increment:n;content:counter(n,decimal-leading-zero);font-family:var(--mono);font-size:.8rem;color:var(--accent);font-weight:600;padding-top:3px}
+.num-list h4{font-size:.98rem;margin-bottom:4px}
+.num-list p{color:var(--ink2);font-size:.88rem}
+/* SECTION: architecture */
+.arch-steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:20px}
+.arch-step{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;padding:16px;min-height:96px;border:1px solid var(--line);border-radius:12px;background:var(--paper);transition:border-color .2s,box-shadow .2s}
+.arch-step:hover{border-color:var(--line2);box-shadow:var(--shadow-sm)}
+.arch-step .as-idx{font-family:var(--mono);font-size:.68rem;color:var(--ink3)}
+.arch-step .as-name{font-size:.9rem;font-weight:600;line-height:1.35}
+.arch-step .as-en{font-family:var(--mono);font-size:.62rem;color:var(--ink3);letter-spacing:.04em}
+.arch-step.on{border-color:var(--ink);box-shadow:var(--shadow-sm)}
+.arch-step.on .as-idx{color:var(--accent)}
+.arch-panel{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:32px 34px;box-shadow:var(--shadow-sm)}
+.arch-panel.swap .arch-panel-in{animation:panelIn .35s ease}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ap-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.ap-en{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;color:var(--accent)}
+.arch-panel h3{font-size:1.3rem}
+.ap-desc{color:var(--ink2);max-width:46em;margin-bottom:22px}
+.arch-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 28px;margin-bottom:24px}
+.arch-points li{position:relative;padding-left:18px;font-size:.88rem}
+.arch-points li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;background:var(--accent);border-radius:2px}
+.ap-chips{display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--line);padding-top:20px}
+.ap-chip{font-family:var(--mono);font-size:.72rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line2);color:var(--ink2);background:var(--paper2)}
+.note{margin-top:16px;font-size:.74rem;color:var(--ink3)}
+/* SECTION: open source */
+.open-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.open-card{position:relative;border:1px solid var(--line);border-radius:14px;padding:26px;background:var(--paper);transition:border-color .2s,box-shadow .2s}
+.open-card:hover{border-color:var(--line2);box-shadow:var(--shadow-md)}
+.oc-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.oc-icon{width:44px;height:44px;border-radius:11px;background:var(--paper2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.oc-head h3{font-size:1.08rem}
+.oc-head .sub{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;color:var(--ink3)}
+.oc-badge{position:absolute;top:22px;right:22px;font-family:var(--mono);font-size:.62rem;padding:4px 10px;border-radius:99px;border:1px solid var(--line2);color:var(--ink2)}
+.open-card > p{color:var(--ink2);font-size:.89rem;margin-bottom:16px}
+.filetree{font-family:var(--mono);font-size:.75rem;line-height:2;background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:14px 18px;color:var(--ink2);overflow-x:auto;white-space:pre}
+.filetree b{color:var(--ink);font-weight:600}
+.filetree i{font-style:normal;color:var(--ink3)}
+.license-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.lic{font-family:var(--mono);font-size:.7rem;padding:6px 12px;border-radius:99px;border:1px solid var(--line2);color:var(--ink2)}
+/* SECTION: terminal */
+.repro-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:start}
+.rstep{display:flex;gap:18px;position:relative;padding-bottom:28px}
+.rstep:last-child{padding-bottom:0}
+.rstep::before{content:"";position:absolute;left:17px;top:40px;bottom:6px;width:1px;background:var(--line2)}
+.rstep:last-child::before{display:none}
+.rnum{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.84rem;font-weight:600;background:var(--paper);border:1px solid var(--line2)}
+.rstep h4{font-size:1rem;margin-bottom:4px;padding-top:6px}
+.rstep p{color:var(--ink2);font-size:.88rem}
+.term{border:1px solid var(--term-line);border-radius:14px;overflow:hidden;background:var(--term-bg);box-shadow:var(--shadow-md)}
+.term-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--term-line)}
+.term-bar .td{width:10px;height:10px;border-radius:50%;background:#3a3e47}
+.term-title{margin-left:8px;font-family:var(--mono);font-size:.72rem;color:var(--term-dim)}
+.term-status{margin-left:auto;font-family:var(--mono);font-size:.66rem;padding:4px 10px;border-radius:99px;border:1px solid var(--term-line);color:var(--term-dim)}
+.term-status.run{color:var(--term-data);border-color:#4a4030}
+.term-status.done{color:var(--term-ok);border-color:#2c4a3a}
+.term-models{display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px 0}
+.term-chip{font-family:var(--mono);font-size:.74rem;padding:10px 14px;min-height:44px;border-radius:9px;border:1px solid var(--term-line);background:transparent;color:var(--term-dim);transition:color .2s,border-color .2s,background .2s}
+.term-chip:hover{color:var(--term-text)}
+.term-chip.on{border-color:var(--term-ok);color:var(--term-ok);background:rgba(127,214,168,.07)}
+.term-cmdline{display:flex;align-items:center;gap:10px;padding:16px;font-family:var(--mono);font-size:.84rem;border-bottom:1px solid var(--term-line);flex-wrap:wrap}
+.term-prompt{color:var(--term-ok)}
+#termCmd{color:var(--term-text);word-break:break-all}
+.term-cursor{display:inline-block;width:8px;height:15px;background:var(--term-ok);animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.term-body{padding:16px;height:300px;overflow-y:auto;font-family:var(--mono);font-size:.77rem;line-height:2;scrollbar-width:thin;scrollbar-color:#3a3e47 var(--term-bg)}
+.term-body::-webkit-scrollbar{width:8px}
+.term-body::-webkit-scrollbar-track{background:var(--term-bg)}
+.term-body::-webkit-scrollbar-thumb{background:#3a3e47;border-radius:6px}
+.term-body::-webkit-scrollbar-thumb:hover{background:#565b66}
+.tl{white-space:pre-wrap;word-break:break-all}
+.tl.dim{color:var(--term-dim)}
+.tl.info{color:var(--term-text)}
+.tl.ok{color:var(--term-ok)}
+.tl.data{color:var(--term-data)}
+.term-done{margin:12px 0 4px;border:1px solid #2c4a3a;background:rgba(127,214,168,.06);border-radius:10px;padding:14px 16px}
+.term-done .td-title{color:var(--term-ok);font-weight:600;font-size:.82rem;margin-bottom:8px}
+.term-done .td-chips{display:flex;flex-wrap:wrap;gap:8px}
+.term-done .td-chip{font-size:.66rem;padding:4px 9px;border-radius:6px;border:1px solid var(--term-line);color:var(--term-dim)}
+.term-actions{display:flex;flex-wrap:wrap;gap:10px;padding:14px 16px;border-top:1px solid var(--term-line)}
+.term-actions .btn-primary{background:#fff;color:var(--term-bg)}
+.term-actions .btn-primary:hover{background:#e8e9ec;box-shadow:none}
+.term-actions .btn-ghost{background:transparent;border-color:#3a3e47;color:var(--term-text)}
+.term-actions .btn-ghost:hover{border-color:#565b66;box-shadow:none}
+/* SECTION: cost */
+.cost-card{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:34px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:44px;box-shadow:var(--shadow-sm)}
+.cost-ctrl label{display:block;font-size:.88rem;color:var(--ink2);margin-bottom:6px}
+.cost-ctrl .val{color:var(--ink);font-family:var(--mono);font-weight:700}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:3px;background:var(--line2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);margin-top:-9px;box-shadow:var(--shadow-sm);transition:border-color .2s}
+input[type=range]:hover::-webkit-slider-thumb{border-color:var(--accent)}
+input[type=range]::-moz-range-track{height:4px;border-radius:3px;background:var(--line2)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);box-shadow:var(--shadow-sm)}
+.range-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.66rem;color:var(--ink3);margin:-6px 0 18px}
+.preset-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.preset{font-size:.8rem;padding:9px 14px;min-height:44px;border-radius:9px;border:1px solid var(--line2);background:var(--paper);color:var(--ink2);transition:all .2s}
+.preset:hover{border-color:var(--ink3);color:var(--ink)}
+.preset.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-weight:600}
+select{width:100%;font-size:16px;font-family:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;min-height:48px}
+select:hover{border-color:var(--ink3)}
+.cost-result{display:flex;flex-direction:column;gap:22px;min-width:0}
+.cr-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.cr-name{font-size:.88rem;color:var(--ink2)}
+.cr-val{font-family:var(--mono);font-weight:700;font-size:clamp(1.15rem,2vw,1.45rem);letter-spacing:-.01em}
+.cost-row.local .cr-val{color:var(--accent)}
+.cost-bar{height:12px;border-radius:6px;background:var(--paper3);overflow:hidden}
+.cost-bar i{display:block;height:100%;width:0;border-radius:6px;transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.cost-row.api .cost-bar i{background:var(--ink)}
+.cost-row.local .cost-bar i{background:var(--accent)}
+.cost-ratio{display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:12px;padding:16px 20px;background:var(--paper2)}
+.cost-ratio b{font-family:var(--mono);font-size:1.35rem;font-weight:700;color:var(--accent);white-space:nowrap}
+.cost-ratio span{font-size:.82rem;color:var(--ink2)}
+.cost-formula{margin-top:26px;border:1px solid var(--line);border-radius:12px;padding:20px 24px;background:var(--paper2)}
+.cost-formula h4{font-size:.8rem;margin-bottom:10px;font-family:var(--mono);letter-spacing:.06em}
+.cost-formula ul{padding-left:18px;list-style:disc;color:var(--ink2);font-size:.8rem;line-height:2}
+.cost-formula .mono{color:var(--ink)}
+/* SECTION: models */
+.model-filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.mfilter{font-size:.86rem;padding:10px 18px;min-height:44px;border-radius:99px;border:1px solid var(--line2);background:var(--paper);color:var(--ink2);transition:all .2s}
+.mfilter:hover{border-color:var(--ink3);color:var(--ink)}
+.mfilter.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:600}
+.model-count{font-family:var(--mono);font-size:.72rem;color:var(--ink3);margin-bottom:24px}
+.model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.model-card{border:1px solid var(--line);border-radius:14px;padding:22px;background:var(--paper);display:flex;flex-direction:column;gap:12px;animation:cardIn .45s ease both;transition:border-color .2s,box-shadow .2s;min-width:0}
+.model-card:hover{border-color:var(--line2);box-shadow:var(--shadow-md)}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.mc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.mc-top h3{font-size:.98rem;font-family:var(--mono);font-weight:600}
+.mc-license{font-family:var(--mono);font-size:.6rem;color:var(--ink2);border:1px solid var(--line2);padding:3px 8px;border-radius:99px;white-space:nowrap}
+.mc-tags{display:flex;flex-wrap:wrap;gap:6px}
+.mc-tag{font-size:.7rem;padding:4px 10px;border-radius:7px;background:var(--paper2);border:1px solid var(--line);color:var(--ink2)}
+.mc-tag.dom{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.mc-desc{color:var(--ink2);font-size:.85rem;flex:1}
+.mc-meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--mono);font-size:.69rem;color:var(--ink3);border-top:1px solid var(--line);padding-top:12px}
+.mc-meta b{color:var(--ink);font-weight:600}
+.mc-foot{display:flex;gap:8px}
+.mc-foot .btn{flex:1;min-width:0}
+/* drawer */
+.scrim{position:fixed;inset:0;z-index:140;background:rgba(22,24,29,.35);opacity:0;pointer-events:none;transition:opacity .3s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:150;width:min(460px,100%);background:var(--paper);border-left:1px solid var(--line);box-shadow:-20px 0 60px rgba(22,24,29,.12);transform:translateX(102%);transition:transform .32s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);flex-shrink:0}
+.drawer-head h3{font-family:var(--mono);font-size:1.02rem}
+.drawer-body{padding:24px 22px 32px;overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:#cfcfc8 var(--paper)}
+.drawer-body::-webkit-scrollbar{width:8px}
+.drawer-body::-webkit-scrollbar-thumb{background:#cfcfc8;border-radius:6px}
+.db-sec{margin-bottom:24px}
+.db-sec h4{font-size:.78rem;font-family:var(--mono);letter-spacing:.1em;color:var(--ink3);margin-bottom:12px;font-weight:600}
+.db-desc{color:var(--ink2);font-size:.9rem}
+.db-cmd{display:flex;align-items:center;gap:10px;background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px 16px}
+.db-cmd code{flex:1;min-width:0;font-family:var(--mono);font-size:.78rem;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.db-cmd code::-webkit-scrollbar{display:none}
+.db-cmd .prompt{color:var(--accent);font-family:var(--mono)}
+.db-link{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-size:.88rem;font-weight:600;padding:10px 0;min-height:44px}
+.db-link:hover{text-decoration:underline}
+/* SECTION: about */
+.dev-card{display:flex;gap:24px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;padding:32px;background:var(--paper);box-shadow:var(--shadow-sm);flex-wrap:wrap}
+.dev-avatar{width:84px;height:84px;border-radius:20px;background:var(--paper2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dev-avatar svg{width:48px;height:48px}
+.dev-info{flex:1;min-width:240px}
+.dev-info h3{font-size:1.4rem;font-family:var(--mono);letter-spacing:-.01em}
+.dev-info .handle{font-family:var(--mono);font-size:.8rem;color:var(--ink3);margin:4px 0 12px}
+.dev-info p{color:var(--ink2);font-size:.92rem;margin-bottom:18px}
+.dev-actions{display:flex;gap:10px;flex-wrap:wrap}
+.fact-list{border:1px solid var(--line);border-radius:14px;background:var(--paper);overflow:hidden}
+.fact-list .spec-row{padding:14px 24px}
+.roadmap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rm-card{border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--paper)}
+.rm-card .rm-phase{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink3);margin-bottom:10px}
+.rm-card h4{font-size:1rem;margin-bottom:8px}
+.rm-card p{color:var(--ink2);font-size:.85rem;margin-bottom:14px}
+.rm-status{display:inline-flex;font-family:var(--mono);font-size:.64rem;padding:4px 10px;border-radius:99px;border:1px solid var(--line2);color:var(--ink2)}
+.rm-status.done{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+/* SECTION: footer */
+footer{border-top:1px solid var(--line);background:var(--paper2);padding:48px 0 28px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px;margin-bottom:36px}
+.foot-brand p{color:var(--ink3);font-size:.84rem;margin-top:12px;max-width:28em}
+.foot-col h4{font-size:.74rem;font-family:var(--mono);letter-spacing:.12em;color:var(--ink3);margin-bottom:12px;font-weight:600}
+.foot-col button,.foot-col a{display:flex;align-items:center;color:var(--ink2);font-size:.88rem;padding:8px 0;min-height:40px;background:none;border:none;transition:color .2s;text-align:left}
+.foot-col button:hover,.foot-col a:hover{color:var(--accent)}
+.foot-bottom{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;color:var(--ink3);font-size:.76rem}
+.foot-bottom .mono{font-size:.7rem}
+/* SECTION: floating utils */
+#toTop{position:fixed;right:20px;bottom:20px;z-index:90;width:48px;height:48px;border-radius:12px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transform:translateY(10px);transition:all .25s;box-shadow:var(--shadow-sm)}
+#toTop.show{opacity:1;pointer-events:auto;transform:none}
+#toTop:hover{border-color:var(--ink3);box-shadow:var(--shadow-md)}
+#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,12px);z-index:180;display:flex;align-items:center;gap:9px;background:var(--ink);color:#fff;font-size:.86rem;padding:13px 22px;border-radius:11px;opacity:0;pointer-events:none;transition:all .25s;box-shadow:var(--shadow-md);max-width:calc(100vw - 40px)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast .ic{color:var(--term-ok)}
+/* SECTION: announce banner */
+:root{--banner-h:48px}
+#announce{position:fixed;top:0;left:0;right:0;z-index:110;display:none;align-items:center;gap:6px;background:var(--accent-soft);border-bottom:1px solid var(--line);padding:5px 10px 5px 20px}
+body.has-banner #announce{display:flex}
+body.has-banner #navbar{top:var(--banner-h)}
+body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
+#navbar{transition:border-color .25s,top .25s}
+.ann-main{flex:1;min-width:0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:none;border:none;text-align:left;padding:8px 4px;min-height:44px;font-size:.84rem;color:var(--ink);line-height:1.55}
+.ann-tag{font-family:var(--mono);font-size:.64rem;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:2px 9px;white-space:nowrap;flex-shrink:0}
+.ann-text{min-width:0}
+.ann-text b{font-weight:700}
+.ann-cta{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:600;font-size:.8rem;white-space:nowrap}
+.ann-cta .ic{width:14px;height:14px}
+.ann-close{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:none;border:none;border-radius:10px;color:var(--ink2);transition:background .2s,color .2s}
+.ann-close:hover{background:rgba(14,122,79,.1);color:var(--ink)}
+/* SECTION: next-gen teaser */
+.next-gen{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:16px 22px;background:var(--paper2);margin-bottom:24px;font-size:.9rem;color:var(--ink2)}
+.next-gen p{flex:1;min-width:240px}
+.next-gen b{color:var(--ink);font-family:var(--mono);font-weight:600}
+/* SECTION: paper */
+.paper-layout{display:grid;grid-template-columns:216px minmax(0,1fr);gap:44px;align-items:start}
+.paper-toc{position:sticky;top:calc(var(--nav-h) + 24px);border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--paper)}
+.toc-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;color:var(--ink3);margin:2px 8px 8px}
+.paper-toc button{display:block;width:100%;text-align:left;padding:8px 12px;min-height:40px;border:none;background:none;border-radius:8px;font-size:.83rem;color:var(--ink2);transition:background .2s,color .2s}
+.paper-toc button:hover{background:var(--paper2);color:var(--ink)}
+.paper-toc button.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.paper-main{min-width:0}
+.paper-badge{display:inline-flex;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:5px 13px;background:var(--accent-soft)}
+.paper-title{font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.02em;margin:16px 0 10px}
+.paper-subtitle{color:var(--ink2);font-size:.98rem;max-width:44em;margin-bottom:16px}
+.paper-meta{display:flex;flex-wrap:wrap;gap:6px 20px;font-family:var(--mono);font-size:.72rem;color:var(--ink3);margin-bottom:22px}
+.paper-note{border:1px solid var(--line);border-left:3px solid var(--warn);background:var(--paper2);border-radius:0 10px 10px 0;padding:14px 18px;font-size:.83rem;color:var(--ink2);margin-bottom:32px}
+.p-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:40px}
+.p-kpi{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--paper)}
+.p-kpi b{display:block;font-size:1.2rem;letter-spacing:-.01em}
+.p-kpi span{font-size:.72rem;color:var(--ink3)}
+.p-sec{margin-bottom:48px;scroll-margin-top:calc(var(--nav-h) + 24px)}
+.p-sec > h2{font-size:1.28rem;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.p-sec h3{font-size:1rem;margin:24px 0 10px}
+.p-sec p{color:var(--ink2);font-size:.92rem;margin-bottom:12px}
+.p-sec p strong,.p-sec li strong{color:var(--ink)}
+.p-sec .tbl-card{margin:14px 0}
+.p-list{margin:10px 0 14px}
+.p-list li{position:relative;padding:6px 0 6px 20px;font-size:.9rem;color:var(--ink2)}
+.p-list li::before{content:"";position:absolute;left:2px;top:.85em;width:6px;height:6px;background:var(--accent);border-radius:2px}
+.code{font-family:var(--mono);font-size:.73rem;line-height:1.9;background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:14px 18px;overflow-x:auto;white-space:pre;color:var(--ink2);margin:14px 0}
+.block-strip{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}
+.bchip{font-family:var(--mono);font-size:.7rem;padding:8px 10px;border-radius:8px;border:1px solid var(--line2);background:var(--paper2);color:var(--ink2);min-width:70px;text-align:center}
+.bchip small{display:block;font-size:.56rem;color:var(--ink3);margin-top:2px}
+.bchip.attn{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.bchip.attn small{color:var(--accent)}
+.strip-cap{font-size:.76rem;color:var(--ink3);margin-bottom:14px}
+.ck-list{margin:12px 0}
+.ck-list li{position:relative;padding:9px 0 9px 28px;border-bottom:1px dashed var(--line);font-size:.88rem;color:var(--ink2)}
+.ck-list li:last-child{border-bottom:none}
+.ck-list li::before{content:"";position:absolute;left:2px;top:13px;width:13px;height:13px;border:1.5px solid var(--line2);border-radius:3px;background:var(--paper)}
+.target-card{border:1px solid var(--accent);border-radius:14px;padding:26px;background:var(--accent-soft);margin:14px 0}
+.target-card .tc-status{display:inline-flex;font-family:var(--mono);font-size:.66rem;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:3px 10px;background:var(--paper);margin-bottom:12px}
+.target-card h3{font-size:1.15rem;font-family:var(--mono);margin-bottom:10px}
+.target-card p{font-size:.9rem;color:var(--ink2);margin-bottom:14px}
+.target-card .spec-row{border-bottom-color:rgba(14,122,79,.18)}
+.paper-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+@media (max-width:1080px){
+  .paper-layout{grid-template-columns:1fr;gap:24px}
+  .paper-toc{position:static;display:flex;flex-wrap:wrap;gap:4px;padding:10px}
+  .toc-title{width:100%;margin:2px 8px 4px}
+  .paper-toc button{width:auto;min-height:40px}
+  .p-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:720px){
+  #announce{padding:4px 6px 4px 14px}
+  .ann-main{font-size:.78rem;gap:8px}
+  .target-card{padding:20px}
+}
+/* SECTION: responsive */
+@media (max-width:1080px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .two-col{grid-template-columns:1fr;gap:32px}
+  .arch-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .arch-points{grid-template-columns:1fr 1fr}
+  .repro-grid{grid-template-columns:1fr;gap:36px}
+  .cost-card{grid-template-columns:1fr;gap:32px;padding:28px}
+  .model-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .entry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .roadmap{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:900px){
+  #navToggle{display:flex}
+  .nav-links{position:fixed;top:var(--nav-h);left:0;right:0;flex-direction:column;align-items:stretch;gap:2px;background:var(--paper);border-bottom:1px solid var(--line);padding:12px 20px 20px;margin:0;display:none;box-shadow:var(--shadow-md);max-height:calc(100vh - var(--nav-h));overflow-y:auto}
+  #navbar.menu-open .nav-links{display:flex}
+  .nav-link{padding:14px;min-height:48px;font-size:.98rem;justify-content:flex-start}
+  .nav-link.active::after{display:none}
+  .nav-cta{margin:10px 0 0}
+}
+@media (max-width:720px){
+  .wrap{width:min(1120px,100% - 40px)}
+  .view-body{padding:44px 0 28px}
+  .hero-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat{padding:14px 12px 14px 0;border-bottom:1px solid var(--line)}
+  .stat + .stat{padding-left:16px}
+  .stat:nth-child(3){border-left:none;padding-left:0}
+  .stat:nth-child(3),.stat:nth-child(4){border-bottom:none}
+  .trio{grid-template-columns:1fr}
+  .trio-item{padding:24px 0;border-bottom:1px solid var(--line)}
+  .trio-item + .trio-item{padding-left:0;border-left:none}
+  .trio-item:last-child{border-bottom:none}
+  .arch-steps{display:flex;overflow-x:auto;gap:10px;padding-bottom:8px;scroll-snap-type:x proximity}
+  .arch-step{min-width:150px;scroll-snap-align:start}
+  .arch-panel{padding:24px 20px}
+  .arch-points{grid-template-columns:1fr}
+  .open-grid{grid-template-columns:1fr}
+  .model-grid{grid-template-columns:1fr}
+  .entry-grid{grid-template-columns:1fr}
+  .tbl th,.tbl td{padding:12px 14px}
+  .foot-grid{grid-template-columns:1fr;gap:24px}
+  .term-body{height:260px}
+  .pn-btn{min-width:0;flex:1}
+  .dev-card{padding:24px}
+  .block{margin-bottom:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001s !important;animation-iteration-count:1 !important;transition-duration:.001s !important}
+  .reveal{opacity:1;transform:none}
+}
+/* SECTION: explore (模型探究) */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;letter-spacing:.02em;padding:4px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap;font-family:var(--sans)}
+.badge.fail{color:#fff;background:var(--danger);border-color:var(--danger)}
+.badge.preview{color:#fff;background:#e07b1a;border-color:#e07b1a}
+.badge.done{color:var(--accent);background:var(--accent-soft);border-color:#cfe6da}
+.badge.arch{color:var(--ink);background:var(--paper2);border-color:var(--line2)}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+.badge.preview .dot{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.explore-line{position:relative;margin:8px 0 0;padding-left:28px}
+.explore-line::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line2)}
+.ex-item{position:relative;padding:18px 0 22px}
+.ex-item::before{content:"";position:absolute;left:-24px;top:24px;width:10px;height:10px;border-radius:50%;background:var(--paper);border:2px solid var(--ink3)}
+.ex-item.fail::before{border-color:var(--danger);background:var(--danger)}
+.ex-item.done::before{border-color:var(--accent);background:var(--accent)}
+.ex-item.preview::before{border-color:#e07b1a;background:#e07b1a}
+.ex-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px}
+.ex-head h3{font-size:19px;margin:0}
+.ex-sub{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.ex-body{color:var(--ink2);font-size:15px}
+.ex-body p{margin:0 0 8px}
+.ex-kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0 4px}
+.ex-kv div{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ex-kv span{display:block;font-size:12px;color:var(--ink3)}
+.ex-kv b{font-size:15px;font-family:var(--mono)}
+.ex-reason{background:#fdf3f2;border:1px solid #f3d6d2;border-left:3px solid var(--danger);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:14px;color:#7d2a22}
+.ex-reason b{color:var(--danger)}
+.ex-reason.amber{background:#fdf6ec;border-color:#f0e0c4;border-left-color:#e07b1a;color:#7a4a11}
+.ex-reason.amber b{color:#b35a08}
+.ex-note{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;margin-top:12px;font-size:14px;color:#14543a}
+.model-card.is-fail{opacity:.92;border-color:#f0d3cf;background:linear-gradient(0deg,#fff6f5,#fff 55%)}
+.model-card.is-preview{border-color:#f2c99b;background:linear-gradient(0deg,#fff8f0,#fff 55%)}
+.mc-status{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.mc-lock{font-size:12px;color:var(--ink3)}
+.tbl.compact th,.tbl.compact td{padding:10px 12px;font-size:14px}
+.tbl .num{font-family:var(--mono);white-space:nowrap}
+/* SECTION: deploy guide */
+.cb{background:var(--term-bg);color:var(--term-text);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.65;overflow-x:auto;white-space:pre;margin:8px 0 2px;border:1px solid var(--term-line)}
+.cb .c{color:var(--term-dim)}
+.cb .k{color:var(--term-ok)}
+.cb .v{color:var(--term-data)}
+.dstep{display:flex;gap:16px;padding:18px 0;border-bottom:1px dashed var(--line2)}
+.dstep:last-child{border-bottom:none}
+.dnum{flex:0 0 34px;height:34px;border-radius:50%;border:1.5px solid var(--ink3);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--ink2);margin-top:2px}
+.dstep h4{font-size:15px;margin:0 0 4px}
+.dstep p{color:var(--ink2);font-size:14px;margin:0 0 4px}
+.dstep .note{font-size:12.5px;color:var(--ink3);margin-top:6px}
+@media (max-width:640px){ .cb{font-size:11.5px} }
+@media (max-width:640px){
+  .explore-line{padding-left:22px}
+  .ex-item::before{left:-19px}
+  .ex-head h3{font-size:17px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要内容</a>
+
+<!-- SECTION: announce -->
+<div id="announce" role="region" aria-label="训练进度提示">
+  <button class="ann-main" id="annOpen">
+    <span class="ann-tag">训练中</span>
+    <span class="ann-text">LingJie 团队自研 <b>HRLM v3.2</b> × LingJie 数据集已开源，我们将会使用它训练出 <b>LingJie-Chat-v2-Beta</b>（64.874M），目前正在单卡 4090 上预训练，点击查看模型、数据集与架构详情</span>
+    <span class="ann-cta">查看论文<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+  </button>
+  <button class="ann-close" id="annClose" aria-label="关闭提示">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+
+<!-- SECTION: nav -->
+<header id="navbar">
+  <div class="nav-inner">
+    <a class="brand" href="#/home" data-goto="home" aria-label="LingJie 首页">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="2" width="24" height="24" rx="7" fill="none" stroke="#16181d" stroke-width="2"/><path d="M14 6.5C17 10 17 18 14 21.5C11 18 11 10 14 6.5Z" fill="#0e7a4f"/></svg>
+      LingJie<span class="tld">.xyz</span>
+    </a>
+    <button id="navToggle" aria-expanded="false" aria-label="打开菜单">
+      <svg class="ic i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="ic i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <nav class="nav-links" id="navLinks" aria-label="页面导航">
+      <button class="nav-link active" data-goto="home">首页</button>
+      <button class="nav-link" data-goto="philosophy">理念</button>
+      <button class="nav-link" data-goto="arch">架构</button>
+      <button class="nav-link" data-goto="open">开源</button>
+      <button class="nav-link" data-goto="repro">复现</button>
+      <button class="nav-link" data-goto="cost">成本</button>
+      <button class="nav-link" data-goto="models">模型</button>
+      <button class="nav-link" data-goto="paper">论文</button>
+      <button class="nav-link" data-goto="about">关于</button>
+      <button class="btn btn-primary btn-sm nav-cta" data-goto="repro">开始复现</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<noscript><div class="wrap" style="padding:24px 0;color:var(--danger)">本站需要启用 JavaScript 才能切换页面。</div></noscript>
+
+<!-- SECTION: view home -->
+<section class="view active" id="view-home">
+  <div class="wrap view-body">
+    <div class="hero-grid">
+      <div class="hero">
+        <div class="sec-label reveal">LINGJIE.XYZ · 窄域小模型训练团队</div>
+        <h1 class="reveal d1">探索 AGI 的<br><span class="mark">另外一面</span></h1>
+        <p class="hero-lede reveal d2">LingJie 专注于<strong>窄域小模型</strong>：为每一个具体领域设计创新架构，把训练与推理成本打下来。<strong>权重、训练脚本、模型代码、训练数据集完整开源</strong>——没有一键 CLI，但每一步命令都公开。让普通人也<strong>用得上、用得起、用得懂</strong>。</p>
+        <div class="hero-ctas reveal d3">
+          <button class="btn btn-primary" data-goto="repro">手动部署流程
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <button class="btn btn-ghost" data-goto="models">浏览模型库</button>
+        </div>
+        <div class="hero-stats reveal d3">
+          <div class="stat"><b>64.874M</b><span>当前在训参数</span></div>
+          <div class="stat"><b>10 × 3</b><span>物理块 × 递归轮数</span></div>
+          <div class="stat"><b>2.6 亿</b><span>预训练 token</span></div>
+          <div class="stat"><b>单卡 4090</b><span>消费级硬件</span></div>
+        </div>
+      </div>
+      <div class="reveal d2">
+        <div class="spec-card" aria-label="焦点模型规格卡">
+          <div class="spec-head"><h2>LingJie-Chat-v2-Beta</h2><span class="badge preview"><span class="dot"></span>训练中</span></div>
+          <div class="spec-rows">
+            <div class="spec-row"><span class="k">架构</span><span class="v">HRLM v3.2（递归 + 混合）</span></div>
+            <div class="spec-row"><span class="k">参数量</span><span class="v">64.874M</span></div>
+            <div class="spec-row"><span class="k">结构</span><span class="v">7 GDN + 3 Mamba-2/Attn</span></div>
+            <div class="spec-row"><span class="k">递归深度</span><span class="v">最多 3 轮（Router 分配）</span></div>
+            <div class="spec-row"><span class="k">训练硬件</span><span class="v">单张 RTX 4090</span></div>
+            <div class="spec-row"><span class="k">许可证</span><span class="v">未发布（架构冻结）</span></div>
+          </div>
+          <div class="spec-cmd">
+            <span class="prompt">$</span>
+            <code id="heroCmd">git clone https://github.com/9178nekomc/LingJie-Code-v1-Beta</code>
+            <button class="icon-btn" id="heroCopy" aria-label="复制复现命令">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>
+            </button>
+          </div>
+          <div class="spec-note">Chat v2 尚未发布；上面的命令拉的是已发布的 Code v1 仓库，手动训练流程见「复现」。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="block reveal">
+      <h2 class="block-title">从这里开始</h2>
+      <div class="entry-grid">
+        <button class="entry-card" data-goto="philosophy">
+          <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <h3>理念</h3><p>为什么是窄域？为什么小模型是 AGI 的另外一面。</p><span class="ec-idx">01 · PHILOSOPHY</span>
+        </button>
+        <button class="entry-card" data-goto="arch">
+          <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="15" r="3"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <h3>架构</h3><p>HRLM v3.2 的六个组件，全部手写、无预训练权重。</p><span class="ec-idx">02 · ARCHITECTURE</span>
+        </button>
+        <button class="entry-card" data-goto="open">
+          <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/><path d="M12 11L4 6.5M12 11l8-4.5M12 11v9"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <h3>开源</h3><p>权重、脚本、代码、数据集，四大件一件不少。</p><span class="ec-idx">03 · OPEN SOURCE</span>
+        </button>
+        <button class="entry-card" data-goto="repro">
+          <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <h3>复现</h3><p>九步手动流程，从装环境到拿到权重，命令可直接复制。</p><span class="ec-idx">04 · REPRODUCE</span>
+        </button>
+        <button class="entry-card" data-goto="cost">
+          <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <h3>成本</h3><p>拖动滑块算一算，本地部署比 API 省多少。</p><span class="ec-idx">05 · COST</span>
+        </button>
+        <button class="entry-card" data-goto="models">
+          <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <h3>模型</h3><p>已发布、训练中、以及失败的模型，全部列出来。</p><span class="ec-idx">06 · MODELS</span>
+        </button>
+      </div>
+      <div class="dev-strip">
+        <div class="ds-txt">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6"/></svg>
+          <p>LingJie 由开发者 <b>9178nekomc</b> 发起并维护 · GitHub 同名账号</p>
+        </div>
+        <div class="ds-actions">
+          <button class="btn btn-ghost btn-sm" data-goto="about">认识开发者</button>
+          <a class="btn btn-ghost btn-sm" href="https://github.com/9178nekomc" target="_blank" rel="noopener">GitHub
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-nav">
+      <button class="pn-btn next" data-goto="philosophy"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">理念<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view philosophy -->
+<section class="view" id="view-philosophy">
+  <div class="wrap view-body">
+    <div class="view-head reveal">
+      <div class="sec-label">01 · 理念 PHILOSOPHY</div>
+      <h2>大模型追逐广度，我们把一个领域<span class="mark">做透</span></h2>
+      <p class="view-sub">AGI 不只有「更大」这一条路。在无数真实场景里，人们需要的不是一个无所不知的庞然大物，而是一个把本职工作做到极致、成本低到可以忽略的小模型。</p>
+    </div>
+    <div class="block two-col">
+      <div class="prose reveal">
+        <h3 class="block-title">为什么是窄域？</h3>
+        <p>通用大模型为了覆盖一切，付出了昂贵的代价：天量参数、集群训练、黑盒权重、难以复现。而真实世界的大多数需求，发生在少数窄域里——客服意图、票据抽取、领域问答、代码补全。</p>
+        <p>LingJie 的选择是：<strong>放弃广度，换取深度与自由</strong>。专为小模型设计创新架构，用窄域数据把每一个参数都用在该用的地方，把「降本增效」写进架构本身，而不是事后压缩。</p>
+        <div class="quote">「智能不必昂贵。当一个 64.87M 的模型就能把一类问题解决好，AGI 才真正属于普通人。」</div>
+      </div>
+      <div class="tbl-card reveal d1">
+        <div class="tbl-scroll">
+          <table class="tbl" aria-label="通用大模型与 LingJie 窄域小模型对比">
+            <thead><tr><th scope="col">维度</th><th scope="col">通用大模型</th><th scope="col" class="lj">LingJie 窄域小模型</th></tr></thead>
+            <tbody>
+              <tr><td class="k">参数规模</td><td class="big">数百 B 起步</td><td class="lj">64.87M – 490M</td></tr>
+              <tr><td class="k">训练硬件</td><td class="big">GPU 集群</td><td class="lj">单张消费级显卡</td></tr>
+              <tr><td class="k">领域表现</td><td class="big">广而泛</td><td class="lj">窄而精</td></tr>
+              <tr><td class="k">开源程度</td><td class="big">多数闭源</td><td class="lj">四大件 100% 开源</td></tr>
+              <tr><td class="k">复现门槛</td><td class="big">几乎无法复现</td><td class="lj">一条命令</td></tr>
+              <tr><td class="k">使用成本</td><td class="big">按次计费，持续支出</td><td class="lj">一次训练，推理近乎免费</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="block reveal">
+      <h3 class="block-title">三个承诺</h3>
+      <div class="trio">
+        <div class="trio-item">
+          <div class="t-idx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>ACCESSIBLE</div>
+          <h3>用得上</h3>
+          <p>64.87M 参数、10 块 3 轮递归的架构，一张消费级显卡就能训练与推理。不需要排队等 API，不需要机房，智能就在你的设备里。</p>
+        </div>
+        <div class="trio-item">
+          <div class="t-idx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M15.5 9.2c-.8-1-2-1.5-3.5-1.5-2 0-3.2 1-3.2 2.3 0 3 6.8 1.4 6.8 4.4 0 1.4-1.4 2.4-3.6 2.4-1.7 0-3-.6-3.8-1.7"/></svg>AFFORDABLE</div>
+          <h3>用得起</h3>
+          <p>创新架构加窄域数据，把训练与推理成本打下一个数量级。训练一次的钱，够通用大模型跑几百次调用——之后每一次推理都近乎免费。</p>
+        </div>
+        <div class="trio-item">
+          <div class="t-idx"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>TRANSPARENT</div>
+          <h3>用得懂</h3>
+          <p>权重、脚本、代码、数据集全部摊开给你看。每一行训练逻辑可读、每一份数据来源可查、每一次结果可复现——没有黑盒，只有理解。</p>
+        </div>
+      </div>
+    </div>
+    <div class="block reveal">
+      <h3 class="block-title">工作原则</h3>
+      <ol class="num-list">
+        <li><div><h4>窄域优先</h4><p>先界定问题边界，再设计模型。一个模型只解决一类问题，把它做到该领域的上限。</p></div></li>
+        <li><div><h4>成本即设计</h4><p>成本不是训练完再优化的指标，而是架构设计的第一约束：词表、注意力、专家数都为目标硬件让路。</p></div></li>
+        <li><div><h4>开源即默认</h4><p>任何发布必须同时公开权重、脚本、代码与数据。做不到完整开源的成果，不发布。</p></div></li>
+      </ol>
+    </div>
+    <div class="block reveal">
+      <h3 class="block-title">常见疑问</h3>
+      <div class="qa">
+        <details>
+          <summary>窄域会不会把智能「做窄」了？<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <div class="qa-a">窄域限制的是任务范围，不是能力深度。把省下来的参数预算全部投入目标领域，窄域小模型在该领域的表现可以超过体量大它百倍的通用模型。多个窄域模型组合起来，同样能覆盖复杂业务。</div>
+        </details>
+        <details>
+          <summary>直接用大模型蒸馏不就够了？<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <div class="qa-a">蒸馏是手段之一，但照搬大模型架构再压缩，会继承大量为「广度」付出的冗余。LingJie 从词表开始就为窄域重新设计，蒸馏只是训练流程中的一环，而不是全部。</div>
+        </details>
+        <details>
+          <summary>训练数据从哪里来？<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+          <div class="qa-a">公开授权数据、合成课程数据与社区贡献数据三类来源，全部附带数据卡说明出处、清洗流程与配比。任何一份数据的来源都可以被追溯和审计。</div>
+        </details>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="pn-btn" data-goto="home"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>首页</span></button>
+      <button class="pn-btn next" data-goto="arch"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">架构<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view arch -->
+<section class="view" id="view-arch">
+  <div class="wrap view-body">
+    <div class="view-head reveal">
+      <div class="sec-label">02 · 架构 ARCHITECTURE</div>
+      <h2>不是把大模型缩小，而是<span class="mark">为小模型重新设计</span></h2>
+      <p class="view-sub">HRLM v3.2 的六个组件，全部手写、不依赖 <span class="mono">transformers</span> 模型。选择任意模块查看设计细节，也可以用左右方向键切换。</p>
+    </div>
+    <div class="block reveal">
+      <div class="arch-steps" id="archSteps" role="tablist" aria-label="架构模块">
+        <button class="arch-step on" data-i="0" role="tab" aria-selected="true"><span class="as-idx">01</span><span class="as-name">因子化嵌入</span><span class="as-en">FACTORED EMB</span></button>
+        <button class="arch-step" data-i="1" role="tab" aria-selected="false"><span class="as-idx">02</span><span class="as-name">递归共享</span><span class="as-en">RECURSION</span></button>
+        <button class="arch-step" data-i="2" role="tab" aria-selected="false"><span class="as-idx">03</span><span class="as-name">门控 Delta 网络</span><span class="as-en">GDN ×7</span></button>
+        <button class="arch-step" data-i="3" role="tab" aria-selected="false"><span class="as-idx">04</span><span class="as-name">Mamba-2 + 滑窗</span><span class="as-en">HYBRID ×3</span></button>
+        <button class="arch-step" data-i="4" role="tab" aria-selected="false"><span class="as-idx">05</span><span class="as-name">深度路由</span><span class="as-en">ROUTER</span></button>
+        <button class="arch-step" data-i="5" role="tab" aria-selected="false"><span class="as-idx">06</span><span class="as-name">状态等价</span><span class="as-en">STATEFUL</span></button>
+      </div>
+      <div class="arch-panel" id="archPanel" role="tabpanel">
+        <div class="arch-panel-in">
+          <div class="ap-head"><span class="ap-en" id="archEn"></span><h3 id="archTitle"></h3></div>
+          <p class="ap-desc" id="archDesc"></p>
+          <ul class="arch-points" id="archPoints"></ul>
+          <div class="ap-chips" id="archChips"></div>
+        </div>
+        <p class="note">表中数据为冻结规格与实测值；训练/推理一致性以 11 项回归测试为准。</p>
+      </div>
+    </div>
+    <div class="block two-col">
+      <div class="reveal">
+        <h3 class="block-title">设计目标</h3>
+        <div class="tbl-card">
+          <div class="tbl-scroll">
+            <table class="tbl" aria-label="架构设计目标">
+              <tbody>
+                <tr><td class="k">参数预算</td><td class="lj">64.874M（规格 64.863M，+0.02%）</td></tr>
+                <tr><td class="k">上下文</td><td class="lj">训练 512 → 1024；注意力滑窗 4096</td></tr>
+                <tr><td class="k">训练硬件</td><td class="lj">单张 RTX 4090（24GB）</td></tr>
+                <tr><td class="k">词表</td><td class="lj">48,000（字节级 BPE，含 7 个特殊符）</td></tr>
+                <tr><td class="k">递归深度</td><td class="lj">最多 3 轮，Router 逐 token 分配</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="reveal d1">
+        <h3 class="block-title">一次前向传播</h3>
+        <ol class="num-list">
+          <li><div><h4>因子化嵌入</h4><p>48000 × 192 的嵌入表上投影到 512 维，输入输出共用同一张表。</p></div></li>
+          <li><div><h4>深度路由</h4><p>Router 逐 token 判断跑 1 / 2 / 3 轮，把算力分给真正难的 token。</p></div></li>
+          <li><div><h4>10 个物理块</h4><p>7 个 GatedDeltaNet + 3 个 Mamba-2/滑窗注意力，残差 ×0.158。</p></div></li>
+          <li><div><h4>绑定输出头</h4><p>RMSNorm → 下投影回 192 → 乘 √192 → 与嵌入表相乘。</p></div></li>
+        </ol>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="pn-btn" data-goto="philosophy"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>理念</span></button>
+      <button class="pn-btn next" data-goto="open"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">开源<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view open -->
+<section class="view" id="view-open">
+  <div class="wrap view-body">
+    <div class="view-head reveal">
+      <div class="sec-label">03 · 开源 OPEN SOURCE</div>
+      <h2>四大件完整开源，<span class="mark">一件不少</span></h2>
+      <p class="view-sub">已发布的 LingJie-Code-v1-Pro 从原始数据到最终权重，整条训练链路全部公开、可审计、可复现。主仓库：<span class="mono">github.com/9178nekomc/LingJie-Code-v1-Beta</span>（权重走 Releases）。Chat v2 尚在训练，未发布。</p>
+    </div>
+    <div class="block reveal">
+      <div class="open-grid">
+        <div class="open-card">
+          <span class="oc-badge">LingJie Public License 1.0</span>
+          <div class="oc-head"><div class="oc-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/><path d="M12 11L4 6.5M12 11l8-4.5M12 11v9"/></svg></div><div><h3>模型权重</h3><div class="sub">WEIGHTS</div></div></div>
+          <p>已发布模型的完整权重，随 GitHub Releases 分发（单文件约数百 MB，仓库本体不放 LFS）。</p>
+          <div class="filetree">releases/
+├── <b>LingJie-Code-v1-Pro.pt</b>
+├── tokenizer.json
+└── <i>SHA256SUMS · 逐位可校验</i></div>
+        </div>
+        <div class="open-card">
+          <span class="oc-badge">LingJie Public License 1.0</span>
+          <div class="oc-head"><div class="oc-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg></div><div><h3>训练脚本</h3><div class="sub">TRAINING SCRIPTS</div></div></div>
+          <p>从数据构建到预训练、SFT、验收的完整脚本。官方用什么配置训的，你就用什么配置复现。</p>
+          <div class="filetree">training/
+├── <b>pretrain_v2.py</b> <i># A/B/C 三阶段</i>
+├── <b>train_v2.py</b>
+└── eval/accept_v2.py <i># 验收</i></div>
+        </div>
+        <div class="open-card">
+          <span class="oc-badge">LingJie Public License 1.0</span>
+          <div class="oc-head"><div class="oc-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6M13 4l-2 16"/></svg></div><div><h3>模型代码</h3><div class="sub">MODEL CODE</div></div></div>
+          <p>纯 PyTorch、手写实现，不加载任何预训练权重，也不用 <span class="mono">nn.TransformerEncoderLayer</span>。每个模块都有注释与设计文档。</p>
+          <div class="filetree">model/
+├── <b>jam_block.py</b> <i># JAM 块</i>
+├── <b>lingjie_code_v2.py</b>
+└── hrlm/model.py <i># HRLM v3.2</i></div>
+        </div>
+        <div class="open-card">
+          <span class="oc-badge">随数据集原始许可</span>
+          <div class="oc-head"><div class="oc-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/><path d="M4 11.5v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div><div><h3>训练数据集</h3><div class="sub">DATASETS</div></div></div>
+          <p>LingJie 自有数据体系：预训练 2.6 亿 token、SFT 647,136 条，全部带清洗流程与来源说明（具体许可以各原始来源为准）。</p>
+          <div class="filetree">datasets/
+├── <b>LingJie-P.T.-small</b> <i># 2.6 亿 token</i>
+├── <b>LingJie-SFT-Cot-small</b> <i># 647,136 条</i>
+└── <i>DATACARD.md · 来源全公开</i></div>
+        </div>
+      </div>
+      <div class="license-strip"><span class="lic">LingJie Public License 1.0 · 代码与权重</span><span class="lic">强 copyleft + 专利授权条款</span><span class="lic">数据集随原始来源许可</span></div>
+    </div>
+    <div class="block two-col">
+      <div class="reveal">
+        <h3 class="block-title">仓库结构</h3>
+        <div class="filetree">LingJie-Code-v1-Beta/
+├── <b>model/</b>        <i># JAM 手写实现</i>
+├── <b>training/</b>     <i># 预训练 / SFT / 验收</i>
+├── <b>inference/</b>    <i># 三段级联管线</i>
+├── data_pipeline/ <i># 数据构建</i>
+├── <b>docs/</b>         <i># 技术报告与复盘</i>
+└── runs/         <i># 权重发布索引</i></div>
+      </div>
+      <div class="reveal d1">
+        <h3 class="block-title">参与贡献</h3>
+        <ol class="num-list">
+          <li><div><h4>Fork 主仓库</h4><p>从 github.com/9178nekomc/LingJie-Code-v1-Beta 拉取代码，本地跑通一次复现。</p></div></li>
+          <li><div><h4>提交你的窄域</h4><p>新的领域模板、数据集或评测集，按数据卡规范补齐来源说明。</p></div></li>
+          <li><div><h4>附上复现报告</h4><p>Pull Request 附带一条命令的复现结果，审核通过即合并发布。</p></div></li>
+        </ol>
+        <div style="margin-top:18px"><a class="btn btn-ghost" href="https://github.com/9178nekomc" target="_blank" rel="noopener">前往 GitHub<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></a></div>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="pn-btn" data-goto="arch"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>架构</span></button>
+      <button class="pn-btn next" data-goto="repro"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">复现<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+<!-- SECTION: view repro -->
+<section class="view" id="view-repro">
+  <div class="wrap view-body">
+    <div class="view-head reveal">
+      <div class="sec-label">04 · 复现 REPRODUCE</div>
+      <h2>没有一键 CLI，<span class="mark">但有完整的手动流程</span></h2>
+      <p class="view-sub">LingJie 没有 <span class="mono">pip install lingjie</span>，也没有 <span class="mono">lingjie repro</span> 这种命令。下面这套流程是我们在单卡 4090 上真实跑通的：从准备机器到拿到权重，每条命令都可以直接复制。预计 4~6 小时（含数据准备）。</p>
+    </div>
+    <div class="block reveal">
+      <div class="dstep"><div class="dnum">01</div><div>
+        <h4>准备机器</h4>
+        <p>单卡 RTX 4090（24GB）即可；数据打包阶段吃内存，建议 ≥32GB。系统 Ubuntu 22.04 + CUDA 12。</p>
+        <pre class="cb"><span class="c"># 检查环境</span>
+nvidia-smi
+python3 -V          <span class="c"># 3.11</span>
+df -h /data         <span class="c"># 至少 20G 可用</span></pre>
+      </div></div>
+      <div class="dstep"><div class="dnum">02</div><div>
+        <h4>装依赖</h4>
+        <p>只需要 PyTorch 与 tokenizers，不依赖 <span class="mono">transformers</span> 的模型实现。</p>
+        <pre class="cb">pip install torch --index-url https://download.pytorch.org/whl/cu128
+pip install tokenizers numpy</pre>
+        <div class="note">实测环境：torch 2.10.0+cu128 · tokenizers 0.23.x</div>
+      </div></div>
+      <div class="dstep"><div class="dnum">03</div><div>
+        <h4>拉代码</h4>
+        <p>仓库根目录下就是 Python 包（<span class="mono">hrlm/</span>），要在<strong>包的上一级</strong>运行，否则会 <span class="mono">ModuleNotFoundError</span>。</p>
+        <pre class="cb">git clone https://github.com/9178nekomc/LingJie-Code-v1-Beta.git /data/hrlm
+cd /data          <span class="c"># 注意：不是 cd /data/hrlm</span>
+ls hrlm           <span class="c"># model.py train.py data.py ...</span></pre>
+      </div></div>
+      <div class="dstep"><div class="dnum">04</div><div>
+        <h4>下载数据并核对</h4>
+        <p>预训练 1,184,107 条（1.3GB）、SFT 647,136 条（2.1GB）。先核对行数，别急着训。</p>
+        <pre class="cb">cd /data/data
+curl -L -C - -o pretrain.jsonl "<预训练直链>"
+curl -L -C - -o sft.jsonl "<SFT 直链>"
+wc -l pretrain.jsonl sft.jsonl
+<span class="c"># 1184107 pretrain.jsonl / 647136 sft.jsonl</span></pre>
+      </div></div>
+      <div class="dstep"><div class="dnum">05</div><div>
+        <h4>数据准备：训分词器 + 打包</h4>
+        <p>这一步会训练 48000 词表的字节级 BPE，并把语料打包成 uint16 二进制，供训练零拷贝随机读。</p>
+        <pre class="cb">cd /data
+python -m hrlm.prepare_data \
+  --pretrain /data/data/pretrain.jsonl \
+  --sft /data/data/sft.jsonl \
+  --out /data/hrlm/artifacts
+<span class="c"># =&gt; artifacts/tokenizer.json  （vocab 48000）</span>
+<span class="c"># =&gt; artifacts/pretrain.bin/.idx（368,975 条 / 3.78 亿 token）</span>
+<span class="c"># =&gt; artifacts/sft.bin/.idx</span></pre>
+        <div class="note">中文必须先把汉字与数字孤立成预 token，否则整句会被当成一个"词"，BPE 训练会直接 OOM。</div>
+      </div></div>
+      <div class="dstep"><div class="dnum">06</div><div>
+        <h4>预训练（A/B/C 三阶段）</h4>
+        <p>1181 步 × 22 万 token = 2.6 亿 token；前 70% 用 seq 512，之后切 1024。每 250 步存一次 ckpt。</p>
+        <pre class="cb">cd /data
+export HRLM_COMPILE_SCAN=1          <span class="c"># 编译扫描函数，7.1K -&gt; 20.6K tok/s</span>
+export HRLM_CHUNK=32
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+python -m hrlm.train --stage pretrain --arch hrlm \
+  --tok artifacts/tokenizer.json --data artifacts/pretrain \
+  --out runs/hrlm_pre --seq-len 512 --micro-batch 32 \
+  --tokens-per-step 220000 --total-tokens 260000000 \
+  --log-every 10 --probe-every 50 --save-every 250</pre>
+        <div class="note">4090 实测约 11 秒/步，总时长 ≈ 3.6 小时。日志里会打印 loss / lr / gnorm / 三桶深度分布 / 残差 RMS。</div>
+      </div></div>
+      <div class="dstep"><div class="dnum">07</div><div>
+        <h4>SFT</h4>
+        <p>647,136 条 × 2 epoch，从预训练权重起。loss 只算 <span class="mono">[思考]…[/回复]</span> 段。</p>
+        <pre class="cb">python -m hrlm.train --stage sft --arch hrlm \
+  --tok artifacts/tokenizer.json --data artifacts/sft \
+  --out runs/hrlm_sft --seq-len 512 --sft-batch 64 --epochs 2 \
+  --init runs/hrlm_pre/ckpt_latest.pt \
+  --log-every 20 --probe-every 200 --save-every 2000</pre>
+      </div></div>
+      <div class="dstep"><div class="dnum">08</div><div>
+        <h4>推理验证</h4>
+        <p>整段 prefill + 逐 token 递推，缓存按 <span class="mono">[轮次][层]</span> 保持。</p>
+        <pre class="cb">python -m hrlm.infer \
+  --ckpt runs/hrlm_sft/ckpt_latest.pt \
+  --tok artifacts/tokenizer.json \
+  --prompt "一件衣服原价120元，打八折后售价是多少？"</pre>
+      </div></div>
+      <div class="dstep"><div class="dnum">＋</div><div>
+        <h4>对照组（可选）</h4>
+        <p>同参数量、同 token 的 12 层普通 Transformer，用来隔离收益来源。</p>
+        <pre class="cb">python -m hrlm.train --stage pretrain --arch transformer \
+  --tok artifacts/tokenizer.json --data artifacts/pretrain \
+  --out runs/tf_pre --seq-len 512 --micro-batch 32 \
+  --tokens-per-step 220000 --total-tokens 260000000</pre>
+      </div></div>
+    </div>
+    <div class="block reveal">
+      <h3 class="block-title">跑起来是什么样</h3>
+      <div class="term reveal" aria-label="训练日志演示终端">
+        <div class="term-bar">
+          <span class="td"></span><span class="td"></span><span class="td"></span>
+          <span class="term-title">hrlm — train</span>
+          <span class="term-status" id="termStatus">待运行</span>
+        </div>
+        <div class="term-models" id="termChips" role="group" aria-label="选择要运行的阶段"></div>
+        <div class="term-cmdline"><span class="term-prompt">$</span><span id="termCmd"></span><span class="term-cursor" aria-hidden="true"></span></div>
+        <div class="term-body" id="termBody" aria-live="polite"></div>
+        <div class="term-actions">
+          <button class="btn btn-primary btn-sm" id="termCopy">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>
+            复制命令</button>
+          <button class="btn btn-ghost btn-sm" id="termRun">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.3M21 3v6h-6"/></svg>
+            重新运行</button>
+        </div>
+      </div>
+      <p class="note">终端为日志片段演示，真实输出以你机器上的为准。</p>
+    </div>
+    <div class="block two-col">
+      <div class="reveal">
+        <h3 class="block-title">环境要求（实测）</h3>
+        <div class="tbl-card">
+          <div class="tbl-scroll">
+            <table class="tbl" aria-label="复现环境要求">
+              <tbody>
+                <tr><td class="k">Python</td><td class="lj">3.11</td></tr>
+                <tr><td class="k">PyTorch</td><td class="big">2.x + CUDA 12（CPU 仅可做小规模冒烟）</td></tr>
+                <tr><td class="k">显卡</td><td class="big">训练 ≥ 24GB（实测 RTX 4090）；推理 8GB 起</td></tr>
+                <tr><td class="k">内存</td><td class="big">≥ 32GB（数据打包阶段需要）</td></tr>
+                <tr><td class="k">磁盘</td><td class="big">≥ 20GB 可用空间</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="reveal d1">
+        <h3 class="block-title">踩过的坑（都会遇到）</h3>
+        <div class="qa">
+          <details>
+            <summary>报 <span class="mono">ModuleNotFoundError: No module named 'hrlm'</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+            <div class="qa-a">工作目录错了。包在 <span class="mono">/data/hrlm/</span>，但必须 <span class="mono">cd /data</span> 再运行，让 <span class="mono">hrlm</span> 作为包被导入；在包内部运行时 <span class="mono">sys.path</span> 不包含上一级。</div>
+          </details>
+          <details>
+            <summary>上传的 .sh 一执行就报 <span class="mono">set: pipefail: invalid option name</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+            <div class="qa-a">Windows 上传的文件是 CRLF 换行，<span class="mono">pipefail</span> 后面粘了一个 <span class="mono">\r</span>。传完先跑一句 <span class="mono">sed -i 's/\r$//' deploy/*.sh</span>。</div>
+          </details>
+          <details>
+            <summary>分词器训练到一半被 <span class="mono">Killed</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+            <div class="qa-a">中文语料直接喂 ByteLevel BPE，整句会被当成一个"词"，词表统计把内存吃穿。必须先用正则把汉字与数字孤立成独立预 token（<span class="mono">tokenizer.py</span> 里的 <span class="mono">_CJK</span>）。</div>
+          </details>
+          <details>
+            <summary><span class="mono">CUDA out of memory</span> 但显存看起来够<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+            <div class="qa-a">3 轮递归 + 反向传播的激活是成倍放大的。开梯度检查点（默认已开）、把 micro-batch 降到 16、梯度累积补回 token 数；再加 <span class="mono">PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True</span> 减少碎片。</div>
+          </details>
+          <details>
+            <summary>训练速度只有 7K token/s<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+            <div class="qa-a">扫描函数在 Python 循环里逐块调度，CPU 才是瓶颈。设 <span class="mono">HRLM_COMPILE_SCAN=1</span> 把两个扫描函数整图编译，实测 7.1K → <strong>20.6K token/s</strong>，预训练时间从 15 小时降到 3.6 小时。</div>
+          </details>
+          <details>
+            <summary>下载中断了怎么办<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></summary>
+            <div class="qa-a"><span class="mono">curl -C -</span> 支持断点续传，重跑同一条命令会从断点继续。下完务必 <span class="mono">wc -l</span> 核对行数（1,184,107 / 647,136），少行说明没下完。</div>
+          </details>
+        </div>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="pn-btn" data-goto="open"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>开源</span></button>
+      <button class="pn-btn next" data-goto="cost"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">成本<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view cost -->
+<section class="view" id="view-cost">
+  <div class="wrap view-body">
+    <div class="view-head reveal">
+      <div class="sec-label">05 · 成本 COST</div>
+      <h2>更低成本，<span class="mark">算给你看</span></h2>
+      <p class="view-sub">拖动滑块或选择预设场景，看看在你的调用规模下，窄域小模型本地部署相比通用大模型 API 能省下多少。所有假设都写在下面，没有藏起来的数字。</p>
+    </div>
+    <div class="block reveal">
+      <div class="cost-card">
+        <div class="cost-ctrl">
+          <label for="costCalls">每日调用次数：<span class="val" id="costCallsLabel"></span></label>
+          <input type="range" id="costCalls" min="0" max="100" value="50" step="1" aria-label="每日调用次数">
+          <div class="range-scale"><span>1 千</span><span>1 万</span><span>10 万</span><span>50 万</span></div>
+          <div class="preset-row" id="costPresets" role="group" aria-label="预设场景">
+            <button class="preset" data-calls="2000">个人项目 · 2 千/日</button>
+            <button class="preset" data-calls="20000">小团队 · 2 万/日</button>
+            <button class="preset" data-calls="200000">生产环境 · 20 万/日</button>
+          </div>
+          <label for="costTier">对比的大模型 API 档位（示例单价）</label>
+          <select id="costTier">
+            <option value="0.004">轻量级大模型 API · ¥0.004 / 次</option>
+            <option value="0.012" selected>旗舰级大模型 API · ¥0.012 / 次</option>
+            <option value="0.05">私有化大模型服务 · ¥0.05 / 次</option>
+          </select>
+          <div class="cost-formula">
+            <h4>估算公式与假设（示例）</h4>
+            <ul>
+              <li>大模型 API 月成本 = 日调用 × 30 × <span class="mono" id="costPriceLabel">¥0.012</span></li>
+              <li>LingJie 本地月成本 = 硬件摊销 <span class="mono">¥900</span> + 电费 <span class="mono">¥240</span> + 日调用 × 30 × <span class="mono">¥0.0002</span></li>
+              <li>本地部署按单张 RTX 4090（FP16 推理，64.87M 权重仅约 130MB）估算；实际以你的硬件与电价为准。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="cost-result">
+          <div class="cost-row api">
+            <div class="cr-top"><span class="cr-name">通用大模型 API · 月成本</span><span class="cr-val" id="costApiVal"></span></div>
+            <div class="cost-bar"><i id="costApiBar"></i></div>
+          </div>
+          <div class="cost-row local">
+            <div class="cr-top"><span class="cr-name">LingJie 本地部署 · 月成本</span><span class="cr-val" id="costLocalVal"></span></div>
+            <div class="cost-bar"><i id="costLocalBar"></i></div>
+          </div>
+          <div class="cost-ratio"><b id="costRatio"></b><span id="costRatioNote"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="block reveal">
+      <h3 class="block-title">部署方式怎么选</h3>
+      <div class="tbl-card">
+        <div class="tbl-scroll">
+          <table class="tbl" aria-label="部署方式对比">
+            <thead><tr><th scope="col">方式</th><th scope="col">适合场景</th><th scope="col">成本特征</th><th scope="col" class="lj">数据隐私</th></tr></thead>
+            <tbody>
+              <tr><td class="k">本地单卡</td><td class="big">稳定高频调用、长期运行</td><td class="big">固定摊销 + 极低边际成本</td><td class="lj">数据完全不出本机</td></tr>
+              <tr><td class="k">纯 CPU / 端侧</td><td class="big">轻量任务、离线设备</td><td class="big">零额外硬件投入（FP16 即可）</td><td class="lj">数据完全不出设备</td></tr>
+              <tr><td class="k">云端 GPU 实例</td><td class="big">弹性峰值、临时批量任务</td><td class="big">按小时计费，随用随停</td><td class="lj">自选区域与合规方案</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="note">表中为定性对比示例，具体以实际硬件与云服务商报价为准。</p>
+    </div>
+    <div class="page-nav">
+      <button class="pn-btn" data-goto="repro"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>复现</span></button>
+      <button class="pn-btn next" data-goto="models"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">模型<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view models -->
+<section class="view" id="view-models">
+  <div class="wrap view-body">
+    <div class="view-head reveal">
+      <div class="sec-label">06 · 模型库 MODELS</div>
+      <h2>模型库，<span class="mark">失败也摆出来</span></h2>
+      <p class="view-sub">这里同时列出已发布、训练中、以及<b>失败的</b>模型。失败品只做展示与复盘，不提供权重和复现命令——把它们藏起来，才是对这条路上所有试错的不尊重。</p>
+    </div>
+    <div class="block reveal">
+      <div class="next-gen reveal">
+        <p><span class="badge preview" style="vertical-align:2px"><span class="dot"></span>预览版 · 训练中</span> <b>LingJie-Chat-v2-Beta</b>（HRLM v3.2，64.874M）正在单张 4090 上预训练，权重尚未发布。</p>
+        <button class="btn btn-ghost btn-sm" data-goto="paper">HRLM v3.2 论文</button>
+      </div>
+      <div class="model-count" id="modelCount"></div>
+      <div class="model-grid" id="modelGrid"></div>
+    </div>
+    <div class="page-nav">
+      <button class="pn-btn" data-goto="cost"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>成本</span></button>
+      <button class="pn-btn next" data-goto="about"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">关于<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view about -->
+<section class="view" id="view-about">
+  <div class="wrap view-body">
+    <div class="view-head reveal">
+      <div class="sec-label">07 · 关于 ABOUT</div>
+      <h2>一个人，一个团队，<span class="mark">一条另外的路</span></h2>
+      <p class="view-sub">LingJie 由开发者 9178nekomc 发起并维护。我们相信智能不必昂贵，也欢迎你一起把这条路走宽。</p>
+    </div>
+    <div class="block reveal">
+      <div class="dev-card">
+        <div class="dev-avatar" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" stroke="#16181d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18L8 6l9 6M38 18l2-12-9 6"/><path d="M10 18c-2 3-3 6.5-3 10 0 8.3 7.6 14 17 14s17-5.7 17-14c0-3.5-1-7-3-10"/><path d="M10 18c3.5-2.5 8.5-4 14-4s10.5 1.5 14 4"/><circle cx="18" cy="27" r="1.4" fill="#16181d" stroke="none"/><circle cx="30" cy="27" r="1.4" fill="#16181d" stroke="none"/><path d="M24 31.5v2M21 35c1 1 2 1.5 3 1.5s2-.5 3-1.5" stroke="#0e7a4f"/></svg>
+        </div>
+        <div class="dev-info">
+          <h3>9178nekomc</h3>
+          <div class="handle">@9178nekomc · GitHub 同名账号</div>
+          <p>LingJie 发起人，负责窄域架构设计、模型训练与开源维护。从第一行代码到每一个数据集的清洗流程，都坚持公开、可查、可复现。</p>
+          <div class="dev-actions">
+            <a class="btn btn-primary" href="https://github.com/9178nekomc" target="_blank" rel="noopener">
+              <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.67.41.35.78 1.05.78 2.12v3.14c0 .3.2.67.8.55A11.51 11.51 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+              GitHub 主页</a>
+            <a class="btn btn-ghost" href="mailto:3453376232@qq.com">邮件联系</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="block two-col">
+      <div class="reveal">
+        <h3 class="block-title">项目档案</h3>
+        <div class="fact-list">
+          <div class="spec-row"><span class="k">项目</span><span class="v">LingJie · 窄域小模型</span></div>
+          <div class="spec-row"><span class="k">站点</span><span class="v">LingJie.xyz</span></div>
+          <div class="spec-row"><span class="k">发起与维护</span><span class="v">9178nekomc</span></div>
+          <div class="spec-row"><span class="k">GitHub</span><span class="v">github.com/9178nekomc</span></div>
+          <div class="spec-row"><span class="k">代码与权重</span><span class="v">LingJie Public License 1.0</span></div>
+          <div class="spec-row"><span class="k">数据集</span><span class="v">随各原始来源许可</span></div>
+        </div>
+      </div>
+      <div class="reveal d1">
+        <h3 class="block-title">路线图（真实进度）</h3>
+        <div class="roadmap" style="grid-template-columns:1fr">
+          <div class="rm-card"><div class="rm-phase">PHASE 1</div><h4>窄域代码模型</h4><p>LingJie-Code-v1-Pro（202M，JAM 架构）已发布，技术报告 + 权重 + 脚本 + 数据全部公开。</p><span class="rm-status done">已完成</span></div>
+          <div class="rm-card"><div class="rm-phase">PHASE 2</div><h4>表示与架构探索</h4><p>v2（AST 括号树）、v3（JAM + MoE）、v4（动作流 + 490.9M 稠密）三次尝试全部失败，复盘已写成「模型探究」。</p><span class="rm-status">已归档 · 失败</span></div>
+          <div class="rm-card"><div class="rm-phase">PHASE 3</div><h4>中文对话模型</h4><p>LingJie-Chat-v2-Beta（HRLM v3.2，64.874M）正在单卡 4090 上预训练，SFT 数据正在重建。</p><span class="rm-status">进行中</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="pn-btn" data-goto="models"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>模型</span></button>
+      <button class="pn-btn next" data-goto="home"><span class="pn-dir">NEXT · 回到首页</span><span class="pn-name">首页<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view doc -->
+<section class="view" id="view-doc">
+  <div class="wrap view-body">
+    <div class="paper-layout">
+      <aside class="paper-toc reveal" aria-label="文章目录">
+        <div class="toc-title">目录 CONTENTS</div>
+        <div id="docToc"></div>
+      </aside>
+      <article class="paper-main">
+        <div class="reveal">
+          <span class="paper-badge" id="docBadge"></span>
+          <h1 class="paper-title" id="docTitle"></h1>
+          <p class="paper-subtitle" id="docSubtitle"></p>
+          <div class="paper-meta" id="docMeta"></div>
+          <div class="p-kpis" id="docKpis"></div>
+        </div>
+        <div id="docBody"></div>
+        <div class="block reveal" style="margin-top:8px">
+          <h3 class="block-title">其他技术报告</h3>
+          <div id="docRelated" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+        </div>
+        <div class="page-nav">
+          <button class="pn-btn" data-goto="models"><span class="pn-dir">BACK · 返回</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>模型库</span></button>
+          <button class="pn-btn next" data-goto="paper"><span class="pn-dir">NEXT · 下一篇</span><span class="pn-name">HRLM v3.2 论文<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: view paper -->
+<section class="view" id="view-paper">
+  <div class="wrap view-body">
+    <div class="paper-layout">
+      <aside class="paper-toc reveal" aria-label="论文目录">
+        <div class="toc-title">目录 CONTENTS</div>
+        <button data-scroll="p-abstract">摘要</button>
+        <button data-scroll="p-tradeoff">核心设计取舍</button>
+        <button data-scroll="p-arch">1 · 架构规范（冻结）</button>
+        <button data-scroll="p-data">2 · 数据体系</button>
+        <button data-scroll="p-train">3 · 训练配置与监控</button>
+        <button data-scroll="p-verify">4 · 验证、对照与复现</button>
+        <button data-scroll="p-target">5 · 目标模型</button>
+        <button data-scroll="p-cite">引用与资源</button>
+      </aside>
+      <article class="paper-main">
+        <div class="reveal">
+          <span class="paper-badge">技术预览 · TECHNICAL PREVIEW · v0.9</span>
+          <h1 class="paper-title">HRLM v3.2 × LingJie 数据体系</h1>
+          <p class="paper-subtitle">混合递归语言模型（Hybrid Recursive Language Model）与配套中文数据体系 —— LingJie-Chat-v2-Beta（HRLM v3.2，64.874M）的架构与训练规范。</p>
+          <div class="paper-meta"><span>LingJie 团队</span><span>开发者 · 9178nekomc</span><span>架构与参数已冻结</span><span>LingJie.xyz · 2026</span></div>
+          <div class="paper-note">预览版说明：本页整合自团队内部《HRLM v3.2 参数表》《HRLM v3.2 架构规范》《LingJie-SFT-Cot-small 数据格式说明》《LingJie-SFT-Cot-small 数据集介绍》。架构与数据集已开源；<b>LingJie-Chat-v2-Beta 正在单卡 4090 上按本规范训练</b>（预训练进度见「模型探究」），权重与评测结果发布后补充至本页。任何偏离架构规范的实现视为新版本，需重新跑全部回归测试。</div>
+          <div class="p-kpis">
+            <div class="p-kpi"><b>64.863M</b><span>总参数量（规格冻结）</span></div>
+            <div class="p-kpi"><b>64.874M</b><span>实现实测 · +0.02%</span></div>
+            <div class="p-kpi"><b>2.6 亿</b><span>预训练 Token</span></div>
+            <div class="p-kpi"><b>11 / 11</b><span>回归测试通过</span></div>
+          </div>
+        </div>
+
+        <section class="p-sec reveal" id="p-abstract">
+          <h2>摘要</h2>
+          <p>HRLM v3.2 是一个约 <strong>64.86M 参数</strong>的小型语言模型架构，面向<strong>中文日常对话 + 极简思维链（CoT）</strong>场景。核心思路是「小参数换深计算」：10 个物理块通过最多 3 次递归共享权重；以 SSM 为主干（7 个 GatedDeltaNet 块 + 3 个 Mamba-2 混合注意力块），注意力仅 3 层且滑动窗口 4K；Router 按 token 难度在 {1,2,3} 三档深度间分配算力，并以三阶段课程完成从全深度预热到硬路由收敛的过渡。训练与推理通过显式状态生命周期规范与 8 项回归测试保证严格等价。</p>
+          <p>配套数据体系包括：预训练集 <strong>LingJie-P.T.-small</strong>（2.6 亿 token，四领域中文语料）与 SFT 集 <strong>LingJie-SFT-Cot-small</strong>（647,136 条纯中文带思维链指令数据），并强制设置同参数量、同 token、同 seq_len 的普通 Transformer 对照组以隔离收益来源。基于本规范训练的目标模型为 <strong>LingJie-Chat-v2-Beta</strong>。</p>
+          <p><strong>非目标：</strong>复杂推理、代码生成、多模态、超长上下文（&gt;8K）、大规模并行训练，均不属于本架构的设计目标。</p>
+        </section>
+
+        <section class="p-sec reveal" id="p-tradeoff">
+          <h2>核心设计取舍</h2>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="核心设计取舍">
+              <thead><tr><th scope="col">目标</th><th scope="col">手段</th><th scope="col">代价</th></tr></thead>
+              <tbody>
+                <tr><td class="lj">小参数换深计算</td><td class="big">10 个物理块 × 最多 3 次递归权重共享</td><td class="big">训练/推理状态管理复杂</td></tr>
+                <tr><td class="lj">长上下文低成本</td><td class="big">SSM 为主干（7 GDN + 3 混合），注意力仅 3 层且滑动窗口 4K</td><td class="big">远端信息依赖 SSM 状态压缩</td></tr>
+                <tr><td class="lj">按 token 难度分配算力</td><td class="big">Router 三桶深度 {1,2,3}，三阶段课程</td><td class="big">需要严格的状态屏蔽与因果性保证</td></tr>
+                <tr><td class="lj">训练/推理严格等价</td><td class="big">显式状态生命周期规范 + 11 项回归测试</td><td class="big">推理需维护 [r][layer] 二维状态</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+        </section>
+
+        <section class="p-sec reveal" id="p-arch">
+          <h2>1 · 模型架构规范（冻结）</h2>
+          <h3>1.1 结构参数</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="模型结构参数">
+              <thead><tr><th scope="col">符号</th><th scope="col">取值</th><th scope="col">说明</th></tr></thead>
+              <tbody>
+                <tr><td class="k">V</td><td class="lj">48,000</td><td class="big">Byte-level BPE 词表，含特殊符</td></tr>
+                <tr><td class="k">d_emb</td><td class="lj">192</td><td class="big">因子化嵌入维度</td></tr>
+                <tr><td class="k">d_model</td><td class="lj">512</td><td class="big">主干隐藏维度</td></tr>
+                <tr><td class="k">d_ff</td><td class="lj">2,304</td><td class="big">SwiGLU 中间维度</td></tr>
+                <tr><td class="k">d_state</td><td class="lj">128</td><td class="big">SSM 状态维度</td></tr>
+                <tr><td class="k">n_blocks</td><td class="lj">10</td><td class="big">物理块数</td></tr>
+                <tr><td class="k">max_rec</td><td class="lj">3</td><td class="big">最大递归次数</td></tr>
+                <tr><td class="k">attn_layers</td><td class="lj">{2,5,8}</td><td class="big">含注意力块索引（0-based），共 3 层</td></tr>
+                <tr><td class="k">gdn_layers</td><td class="lj">{0,1,3,4,6,7,9}</td><td class="big">纯 GatedDeltaNet 块，共 7 层</td></tr>
+                <tr><td class="k">window</td><td class="lj">4,096</td><td class="big">注意力滑动窗口 / KV cache 上限</td></tr>
+                <tr><td class="k">rope_frac</td><td class="lj">0.25</td><td class="big">仅前 25% 头维度加 RoPE；head_dim=64 中前 16 维</td></tr>
+                <tr><td class="k">n_heads</td><td class="lj">8</td><td class="big">注意力头数，head_dim = 64</td></tr>
+                <tr><td class="k">router_buckets</td><td class="lj">3</td><td class="big">depth ∈ {1,2,3}</td></tr>
+                <tr><td class="k">router_dropout</td><td class="lj">0.1</td><td class="big">Router Dropout</td></tr>
+                <tr><td class="k">gate_floor</td><td class="lj">0.05</td><td class="big">FFN 门控 δ：SiLU(z)+0.05</td></tr>
+                <tr><td class="k">residual_scale</td><td class="lj">0.158</td><td class="big">(2·10·2.0)^-0.5，Mixer/FFN 各乘一次</td></tr>
+                <tr><td class="k">logit_scale_init</td><td class="lj">√192 ≈ 13.86</td><td class="big">可学习</td></tr>
+                <tr><td class="k">总参数量</td><td class="lj">64.863M</td><td class="big">见参数预算明细</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <h3>1.2 参数预算明细（核算 64.86M）</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="参数预算明细">
+              <thead><tr><th scope="col">组件</th><th scope="col">计算</th><th scope="col">参数量</th></tr></thead>
+              <tbody>
+                <tr><td class="k">因子化嵌入表</td><td class="big">48000 × 192</td><td class="lj">9.216M</td></tr>
+                <tr><td class="k">上投影</td><td class="big">192 × 512</td><td class="lj">0.098M</td></tr>
+                <tr><td class="k">下投影</td><td class="big">512 × 192</td><td class="lj">0.098M</td></tr>
+                <tr><td class="k">7 × GatedDeltaNet</td><td class="big">每块 ≈1.70M</td><td class="lj">11.900M</td></tr>
+                <tr><td class="k">3 × Mamba-2 + Partial-Attn</td><td class="big">每块 ≈2.70M</td><td class="lj">8.100M</td></tr>
+                <tr><td class="k">10 × SwiGLU FFN</td><td class="big">每块 512×2304×3 ≈3.54M</td><td class="lj">35.400M</td></tr>
+                <tr><td class="k">RMSNorm + Router</td><td class="big">16 个 Norm + 1 个 Router</td><td class="lj">0.050M</td></tr>
+                <tr><td class="k">合计</td><td class="big">—</td><td class="lj">64.863M</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <p>占比：FFN 54.5%，Embedding 14.2%，SSM+Attn 30.8%，Norm/Router 0.08%。后续扩容优先调 d_ff，但<strong>不得在 v3.2 上修改</strong>，需新版本。</p>
+          <h3>1.3 物理块布局</h3>
+          <div class="block-strip" aria-label="十个物理块的类型布局">
+            <span class="bchip">0<small>GDN</small></span>
+            <span class="bchip">1<small>GDN</small></span>
+            <span class="bchip attn">2<small>Mamba-2 + Attn</small></span>
+            <span class="bchip">3<small>GDN</small></span>
+            <span class="bchip">4<small>GDN</small></span>
+            <span class="bchip attn">5<small>Mamba-2 + Attn</small></span>
+            <span class="bchip">6<small>GDN</small></span>
+            <span class="bchip">7<small>GDN</small></span>
+            <span class="bchip attn">8<small>Mamba-2 + Attn</small></span>
+            <span class="bchip">9<small>GDN</small></span>
+          </div>
+          <p class="strip-cap">物理块 0–9：绿色为含注意力块（2/5/8），其余为纯 GatedDeltaNet。每块内部完成 Mixer + SwiGLU FFN 与两次标准残差（scale = 0.158）。</p>
+          <h3>1.4 组件精确定义</h3>
+          <p><strong>因子化绑定嵌入（Stage 0）：</strong>唯一存储的嵌入表 48000×192，上投影 192→512、下投影 512→192，输出头复用同一张表。嵌入表初始化 N(0, 0.02)；上投影后加 1e-6 · normalize(h0)，防止门控骨干遇到精确零输入。</p>
+          <p><strong>PhysicalBlock 契约：</strong>块内部完成 Mixer、FFN、两次标准残差更新与状态更新；RecursiveCore 不再乘任何残差。</p>
+          <div class="code">class PhysicalBlock(nn.Module):
+    def forward(self, x, state, token_mask):
+        # x: [B,T,d_model]  token_mask: [B,T,1] float 0/1
+        mixer_out, new_state = self.mixer(self.norm1(x), state, token_mask)
+        x = x + token_mask * self.scale * mixer_out      # 残差 1
+        ffn_out = self.ffn(self.norm2(x))
+        x = x + token_mask * self.scale * ffn_out        # 残差 2
+        return x, new_state</div>
+          <ul class="p-list">
+            <li>self.scale = 0.158，所有块相同；token_mask 同时作用于残差和状态写入。</li>
+            <li>FFN 内部：SwiGLU(z) + 0.05（GateFloor）。</li>
+          </ul>
+          <p><strong>GatedDeltaNet（块 0,1,3,4,6,7,9）：</strong>decay = 0.1 + 0.9 · sigmoid(w)，affine sigmoid 参数化，禁止 clamp；A_log 初始化 Uniform(log 1, log 16)；状态形状 [B, d_state, d_model]。状态更新必须按 token_mask 屏蔽写入：</p>
+          <div class="code">candidate = decay * state + delta * outer(v)
+new_state = torch.where(token_mask.bool(), candidate, state)</div>
+          <p><strong>Mamba-2 + Partial-RoPE Attention（块 2,5,8）：</strong>Mamba-2 分支同上屏蔽写入；注意力分支采用 QK-Norm（per-head RMSNorm），仅前 25% 头维度加 RoPE（head_dim=64 中前 16 维，其余 NoPE），滑动窗口 window=4096、KV cache 上限 4096。训练时 state=None，完整序列前向（因果掩码 + 窗口掩码）；推理时 state 为该轮该层的 KV cache。</p>
+          <p><strong>输出头（Stage 3，NoPE）：</strong>RMSNorm → down_proj → 乘 logit_scale（初值 √192，可学习）→ float() 后与 float() 绑定嵌入表相乘 → chunked cross entropy，避免物化 [B,T,V]，防 BF16 溢出。主体 NoPE，仅 3 个注意力块有部分 RoPE。</p>
+          <h3>1.5 递归路径与状态生命周期</h3>
+          <p><strong>训练：</strong>阶段 A 走 run_recursive（强制 depth ≡ 3，与全激活等价）；阶段 B/C 走 compute_candidates——三个候选必须全 token 全激活前向，Router 只在最后加权时参与（B：soft Gumbel；C：straight-through）。禁止候选输出用 active_r = (depth &gt; r)。</p>
+          <p><strong>推理：</strong>InferenceState 维护 [r][layer] 二维 ssm_state 与 kv_cache，跨 token 持久化，仅新序列开始时 reset()。禁止每生成一个 token 就重置状态——那会让训练/推理不等价。</p>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="状态生命周期">
+              <thead><tr><th scope="col">状态</th><th scope="col">训练</th><th scope="col">推理</th><th scope="col">新序列</th></tr></thead>
+              <tbody>
+                <tr><td class="k">states[i]（块内）</td><td class="big">每轮 [None]*10</td><td class="big">—</td><td class="big">—</td></tr>
+                <tr><td class="k">ssm_state[r][i]</td><td class="big">—</td><td class="lj">跨 token 持续，不重置</td><td class="big">reset() 清空</td></tr>
+                <tr><td class="k">kv_cache[r][i]</td><td class="big">—</td><td class="lj">跨 token 持续，不重置</td><td class="big">reset() 清空</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <ul class="p-list">
+            <li><strong>状态屏蔽（强制）：</strong>非激活 token 的 SSM 状态原样保留，不衰减、不更新、不清空；禁止只在输出乘 token_mask 而不屏蔽状态写入。</li>
+            <li>每块 states[i] 独立，维度/语义不同；递归注意力 KV 按轮隔离，禁止跨轮共享。</li>
+            <li>深度有序：depth=2 执行第 1、2 轮，跳过第 3 轮；三轮不是独立二分类。</li>
+          </ul>
+          <h3>1.6 Router 与三阶段课程</h3>
+          <div class="code">RMSNorm（独立）→ Dropout(0.1) → Linear(512 → 3) → depth_logits [B,T,3]</div>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="Router 三阶段课程">
+              <thead><tr><th scope="col">阶段</th><th scope="col">步数范围</th><th scope="col">占比</th><th scope="col">策略</th><th scope="col">τ</th><th scope="col">α（熵）</th><th scope="col">β（均衡）</th></tr></thead>
+              <tbody>
+                <tr><td class="k">A 全深度预热</td><td class="big">0–355</td><td class="big">0–30%</td><td class="big">depth ≡ 3，Router 只收辅助损失</td><td class="big">—</td><td class="big">0.03</td><td class="big">0.01</td></tr>
+                <tr><td class="k">B 软路由退火</td><td class="big">355–827</td><td class="big">30–70%</td><td class="big">候选全前向 + soft Gumbel 加权</td><td class="big">2.0→1.0</td><td class="big">0.03</td><td class="big">0.01</td></tr>
+                <tr><td class="k">C 硬路由收敛</td><td class="big">827–1,182</td><td class="big">70–100%</td><td class="big">候选全前向 + straight-through</td><td class="big">1.0</td><td class="big">0.01</td><td class="big">0.003</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <p><strong>辅助损失：</strong>L_aux = α · L_entropy + β · L_balance。L_entropy 为 batch 内 depth 分布的熵（最大化，防塌缩）；L_balance 为三桶占比与均匀分布的 KL（阶段 C 减弱，让 Router 按难度分配）。SFT 阶段 α = β = 0.01，另加 <strong>CoT 边界辅助（权重 0.01 起）</strong>：对 CoT 结束 token 的 depth 分布向下偏置，观察 depth=1 桶占比上升且意图准确率不降。</p>
+          <h3>1.7 数值稳定性机制</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="数值稳定性机制">
+              <thead><tr><th scope="col">参数/机制</th><th scope="col">取值/做法</th><th scope="col">说明</th></tr></thead>
+              <tbody>
+                <tr><td class="k">SSM decay</td><td class="lj">0.1 + 0.9·sigmoid(w)</td><td class="big">affine sigmoid，梯度处处非零，禁止 clamp</td></tr>
+                <tr><td class="k">SSM A_log</td><td class="lj">Uniform(log 1, log 16)</td><td class="big">专用初始化</td></tr>
+                <tr><td class="k">GateFloor δ</td><td class="lj">0.05</td><td class="big">SiLU(z)+0.05</td></tr>
+                <tr><td class="k">近零嵌入保护</td><td class="lj">1e-6 · normalize(h)</td><td class="big">上投影后加</td></tr>
+                <tr><td class="k">QK-Norm</td><td class="lj">per-head RMSNorm</td><td class="big">注意力层</td></tr>
+                <tr><td class="k">RoPE 比例</td><td class="lj">0.25</td><td class="big">仅前 25% 头维度</td></tr>
+                <tr><td class="k">残差缩放</td><td class="lj">0.158</td><td class="big">Mixer 和 FFN 各乘一次</td></tr>
+                <tr><td class="k">输出头精度</td><td class="lj">float logits + chunked CE</td><td class="big">防 BF16 溢出</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <div class="code">scale = (2 · n_phys · E[rec])^-0.5 = (2 · 10 · 2.0)^-0.5 = 0.158</div>
+          <p>若 Router 实际分布偏深（平均 2.5），可降到 0.141。监控拆分三项：分支输出 RMS、残差更新量 RMS、相加后隐藏状态 RMS；判断稳定性看<strong>相加后隐藏状态 RMS</strong>，相邻块比值 0.8–1.2。</p>
+        </section>
+
+        <section class="p-sec reveal" id="p-data">
+          <h2>2 · 数据体系</h2>
+          <h3>2.1 预训练集 LingJie-P.T.-small</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="预训练数据集规格">
+              <tbody>
+                <tr><td class="k">Token 数</td><td class="lj">260,000,000（2.6 亿）</td></tr>
+                <tr><td class="k">seq_len</td><td class="big">512，最后 30% 渐进到 1,024</td></tr>
+                <tr><td class="k">BPE</td><td class="big">Byte-level BPE，于 2.6 亿 token 原始中文文本（去重清洗后）训练</td></tr>
+                <tr><td class="k">特殊 token</td><td class="big">&lt;pad&gt; &lt;bos&gt; &lt;eos&gt; [思考] [/思考] [回复] [/回复]</td></tr>
+                <tr><td class="k">标识前缀</td><td class="big">LJPT-xxxxxxxx</td></tr>
+                <tr><td class="k">体系口径</td><td class="big">与 SFT 完全一致：Qwen2.5 tokenizer 口径、规则清洗、zhconv 转简</td></tr>
+                <tr><td class="k">记录单元</td><td class="big">一段文档文本（核心字段 text），任务形态为继续学习（LM）</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <h3>2.2 SFT 集 LingJie-SFT-Cot-small</h3>
+          <p>纯中文带思维链（CoT）指令微调数据集，面向小模型训练设计，与同体系预训练集完全对齐，覆盖日常通用对话与基础数学推理两大核心场景，全量经过身份归一、跨源去重与覆盖率校验，开箱可训。</p>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="SFT 数据集规格">
+              <tbody>
+                <tr><td class="k">总条数</td><td class="lj">647,136 条</td></tr>
+                <tr><td class="k">总 Token 量</td><td class="big">约 7.43 亿（Qwen2.5 tokenizer 口径）</td></tr>
+                <tr><td class="k">领域占比</td><td class="big">日常通用对话 64% / 基础数学推理 36%</td></tr>
+                <tr><td class="k">CoT 覆盖率</td><td class="lj">100%，全部样本含完整思维链</td></tr>
+                <tr><td class="k">语言 / 格式</td><td class="big">纯简体中文；UTF-8 JSONL 单文件流式读取，约 3.3 GB</td></tr>
+                <tr><td class="k">标识前缀</td><td class="big">LJSFT-xxxxxxxx</td></tr>
+                <tr><td class="k">验证集</td><td class="big">5,000 条，从 SFT 留出，不参与训练</td></tr>
+                <tr><td class="k">覆盖率对齐</td><td class="big">与预训练集 bigram 覆盖率 99.6%，无领域外新增知识</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <h3>2.3 记录格式</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="记录顶层字段">
+              <thead><tr><th scope="col">字段</th><th scope="col">类型</th><th scope="col">说明</th></tr></thead>
+              <tbody>
+                <tr><td class="k">id</td><td class="big">string</td><td class="big">全局唯一编号，LJSFT-00000001 连续递增</td></tr>
+                <tr><td class="k">messages</td><td class="big">array</td><td class="big">对话轮次，角色 system / user / assistant</td></tr>
+                <tr><td class="k">domain</td><td class="big">string</td><td class="big">chitchat（日常/通用）、math（基础数学）</td></tr>
+                <tr><td class="k">source</td><td class="big">string</td><td class="big">原始数据来源标签，便于追溯</td></tr>
+                <tr><td class="k">has_cot</td><td class="big">bool</td><td class="big">是否含思维链，本套全为 true</td></tr>
+                <tr><td class="k">identity_sanitized</td><td class="big">bool</td><td class="big">是否经过身份归一，全为 true</td></tr>
+                <tr><td class="k">meta</td><td class="big">object</td><td class="big">reasoning_chars / answer_chars / charset</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <p>messages 为单轮三段：system 统一身份设定（「你是 LingJie（凌界），一个乐于助人的人工智能助手。请先逐步思考，再给出回答。」）；user 提问；assistant 为带 CoT 的完整回答，固定渲染为 &lt;think&gt;…逐步推理…&lt;/think&gt; + 最终回答两段，与主流 R1 蒸馏格式一致。训练时按 messages 套对应 chat template；CoT 部分可参与 loss，也可单独加权或屏蔽。</p>
+          <div class="code">{
+  "id": "LJSFT-00000001",
+  "messages": [
+    { "role": "system",
+      "content": "你是 LingJie（凌界），一个乐于助人的人工智能助手。请先逐步思考，再给出回答。" },
+    { "role": "user",
+      "content": "一件衣服原价120元，打八折后售价是多少？" },
+    { "role": "assistant",
+      "content": "&lt;think&gt;\n用户问的是衣服打八折后的售价，首先要明确八折就是原价的80%，也就是0.8倍。原价是120元，所以直接用120乘以0.8就可以了。计算一下：120×0.8=96。所以折后售价是96元。\n&lt;/think&gt;\n\n这件衣服打八折后的售价为 96 元。\n计算过程：原价 120 元 × 折扣 0.8 = 96 元。" }
+  ],
+  "domain": "math",
+  "source": "school_math_r1",
+  "has_cot": true,
+  "identity_sanitized": true,
+  "meta": { "reasoning_chars": 112, "answer_chars": 58, "charset": "UTF-8" }
+}</div>
+          <h3>2.4 数据来源</h3>
+          <p>全部数据来自公开开源数据集，经清洗、转换、去重后整合而成。</p>
+          <ul class="p-list">
+            <li><strong>日常通用对话域：</strong>LCCC 大规模中文闲聊数据集（微博真实口语对话）、Mxode 中文通用推理数据集、Congliu 中文 R1 蒸馏指令集、OpenQA 中文开放问答数据集。</li>
+            <li><strong>基础数学推理域：</strong>School-Math-R1-Distil-Chinese 中小学数学推理集、公开中文基础数学 CoT 数据集。</li>
+          </ul>
+          <h3>2.5 处理流水线</h3>
+          <ol class="num-list">
+            <li><div><h4>身份归一</h4><p>全量替换 50+ 第三方模型品牌标识，统一助手身份为 LingJie（凌界），system 提示词全局统一。</p></div></li>
+            <li><div><h4>纯中文过滤</h4><p>汉字占比阈值校验，剔除外文为主与混合语言样本；繁简统一转换为简体中文。</p></div></li>
+            <li><div><h4>格式统一</h4><p>多源异构 reasoning 字段统一收敛为 &lt;think&gt; 标签格式，对话结构标准化。</p></div></li>
+            <li><div><h4>跨源去重</h4><p>基于 MinHash + LSH 的近重复去重，移除跨数据集重复与高度相似样本。</p></div></li>
+            <li><div><h4>质量过滤</h4><p>剔除空内容、过短样本、违规敏感内容与低质量推理。</p></div></li>
+            <li><div><h4>覆盖率对齐</h4><p>与配套预训练集做 bigram 覆盖率校验，整体覆盖率 99.6%，无领域外新增知识。</p></div></li>
+          </ol>
+          <h3>2.6 局限性与许可</h3>
+          <ul class="p-list">
+            <li>数据均为模型蒸馏生成，推理质量受上游模型能力限制，部分样本可能存在推理冗余或细节瑕疵。</li>
+            <li>以单轮指令对话为主，多轮长对话覆盖有限。</li>
+            <li>仅含日常通用与基础数学内容，不包含医疗、法律、代码等垂直专业领域能力。</li>
+            <li>无人工偏好标注与 RLHF 对齐数据，仅适用于基础 SFT 阶段。</li>
+          </ul>
+          <p><strong>许可证：</strong>本数据集为开源数据整合加工产物，各子数据源遵循其原始开源许可证（MIT、Apache-2.0、CC 系列等）；使用者需自行遵守各原始数据集许可协议，整合包不对二次分发与商用做额外担保。数据集仅用于学术研究与模型开发，请勿用于违法违规场景。</p>
+        </section>
+
+        <section class="p-sec reveal" id="p-train">
+          <h2>3 · 训练配置与监控</h2>
+          <h3>3.1 超参数</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="训练超参数">
+              <thead><tr><th scope="col">参数</th><th scope="col">预训练</th><th scope="col">SFT</th></tr></thead>
+              <tbody>
+                <tr><td class="k">Global batch</td><td class="lj">220,000 token（固定 token 数）</td><td class="lj">64 条</td></tr>
+                <tr><td class="k">总步数</td><td class="big">≈1,182</td><td class="big">10,112 / epoch × 2 epoch</td></tr>
+                <tr><td class="k">学习率</td><td class="big">3e-4</td><td class="big">1e-4</td></tr>
+                <tr><td class="k">Warmup</td><td class="big">300 步</td><td class="big">50 步</td></tr>
+                <tr><td class="k">LR 调度</td><td class="big">cosine → 3e-5</td><td class="big">cosine → 1e-5</td></tr>
+                <tr><td class="k">优化器</td><td class="big">AdamW</td><td class="big">AdamW</td></tr>
+                <tr><td class="k">betas</td><td class="big">(0.9, 0.95)</td><td class="big">(0.9, 0.95)</td></tr>
+                <tr><td class="k">eps</td><td class="big">1e-8</td><td class="big">1e-8</td></tr>
+                <tr><td class="k">weight decay</td><td class="big">0.1</td><td class="big">0.1</td></tr>
+                <tr><td class="k">grad clip</td><td class="big">1.0</td><td class="big">1.0</td></tr>
+                <tr><td class="k">精度</td><td class="big">bf16</td><td class="big">bf16</td></tr>
+                <tr><td class="k">Checkpoint</td><td class="big">每 250 步</td><td class="big">每 2,000 步</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <p><strong>Batch 语义：</strong>Global batch 恒为 220K token。seq_len=512 → 约 430 序列/步；seq_len=1024 → 约 215 序列/步。总 token 数 2.6 亿不变，总步数 1,182 不变。</p>
+          <h3>3.2 监控阈值（前 5% 步数判断）</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="训练监控阈值">
+              <thead><tr><th scope="col">指标</th><th scope="col">健康区间</th><th scope="col">异常动作</th></tr></thead>
+              <tbody>
+                <tr><td class="k">三桶深度分布</td><td class="big">每桶 15%–50%</td><td class="big">某桶 &gt;80% → 回退阶段 A，α→0.05</td></tr>
+                <tr><td class="k">SSM 状态范数</td><td class="big">warmup 后 1–2 数量级内漂移并稳定</td><td class="big">单调爆炸/归零 → 查 decay 与 A_log</td></tr>
+                <tr><td class="k">残差相加后 RMS 比值</td><td class="big">相邻块 0.8–1.2</td><td class="big">连续偏离 → 调 scale（0.158→0.141）</td></tr>
+                <tr><td class="k">注意力层熵</td><td class="big">warmup 后缓慢下降，未到 one-hot</td><td class="big">早期近 0 → 查 QK-Norm 与 RoPE</td></tr>
+                <tr><td class="k">Decay 下界占比（&lt;0.15）</td><td class="big">&lt;30%</td><td class="big">≥30% → 先诊断状态范数与更新量比例，再决定是否降下界到 0.05（非自动触发）</td></tr>
+                <tr><td class="k">SFT 意图准确率</td><td class="big">第 1 epoch 后 &gt;85%</td><td class="big">不涨 → 停第 2 epoch</td></tr>
+                <tr><td class="k">CoT 格式完整率</td><td class="big">≥90%</td><td class="big">低于 → 约束解码或格式损失</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <p>补充：同时监控 decay 下界（&lt;0.15）与上界（&gt;0.95）参数占比。</p>
+          <h3>3.3 训练成本（4090 单卡）</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="训练成本">
+              <thead><tr><th scope="col">阶段</th><th scope="col">时间</th></tr></thead>
+              <tbody>
+                <tr><td class="k">BPE 训练（CPU）</td><td class="big">10–20 min</td></tr>
+                <tr><td class="k">预训练阶段 A（全深度 3 轮）</td><td class="big">≈1 h</td></tr>
+                <tr><td class="k">预训练阶段 B/C（候选全前向）</td><td class="big">≈2.5 h</td></tr>
+                <tr><td class="k">SFT 647k × 2 epoch</td><td class="big">60–90 min</td></tr>
+                <tr><td class="k">总计</td><td class="lj">4–5 h</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+        </section>
+
+        <section class="p-sec reveal" id="p-verify">
+          <h2>4 · 验证、对照与复现</h2>
+          <h3>4.1 回归测试标准（起跑前必过）</h3>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="八项回归测试">
+              <thead><tr><th scope="col">#</th><th scope="col">测试</th><th scope="col">模式</th><th scope="col">通过标准</th></tr></thead>
+              <tbody>
+                <tr><td class="k">1</td><td class="lj">SSM 因果性</td><td class="big">FP32 / BF16</td><td class="big">FP32 &lt;1e-4；BF16 初始段 &lt;1e-3</td></tr>
+                <tr><td class="k">2</td><td class="lj">Router 梯度</td><td class="big">FP32</td><td class="big">depth_logits.grad 非零，范数 1e-3–1e-1</td></tr>
+                <tr><td class="k">3</td><td class="lj">残差缩放</td><td class="big">任意</td><td class="big">相邻块隐藏状态 RMS 比值 0.8–1.2</td></tr>
+                <tr><td class="k">4</td><td class="lj">深度有序性</td><td class="big">任意</td><td class="big">depth 全 2 时第 3 轮 active 全 0，states[2] 不写</td></tr>
+                <tr><td class="k">5</td><td class="lj">缓存一致性</td><td class="big">FP32 / BF16</td><td class="big">每轮每层隐藏状态和 logits：FP32 &lt;1e-4；BF16 按分布</td></tr>
+                <tr><td class="k">6</td><td class="lj">不同深度因果性</td><td class="big">FP32</td><td class="big">注入固定 depth，位置 t 输出与前缀一致 &lt;1e-4</td></tr>
+                <tr><td class="k">7</td><td class="lj">非激活状态屏蔽</td><td class="big">FP32</td><td class="big">非激活位置 SSM 状态前后两步 torch.equal</td></tr>
+                <tr><td class="k">8</td><td class="lj">候选输出完整性</td><td class="big">任意</td><td class="big">depth 全 1 的 batch，h2/h3 与全深度候选逐元素相等</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <ul class="p-list">
+            <li>测试 1/5 在 BF16 下不得用统一 &lt;1e-4：FP32 严格，BF16 按分布并检查是否随长度放大。</li>
+            <li>测试 5 必须比较每轮每层，不只比最终 logits——误差可能互相抵消，掩盖 cache 归属错误。</li>
+            <li>测试 6 必须注入固定 depth，否则测到的是 Router 因果性，不是递归主体。</li>
+          </ul>
+          <h3>4.2 禁止事项（不得重犯）</h3>
+          <ol class="num-list">
+            <li><div><p>禁止在 RecursiveCore 里写 x = x + active * scale * out。残差由 PhysicalBlock 内部完成，RecursiveCore 只负责轮次和状态生命周期。</p></div></li>
+            <li><div><p>禁止候选输出用 active_r = (depth &gt; r)。阶段 B/C 候选必须全 token 全激活，Router 只在加权时参与。</p></div></li>
+            <li><div><p>禁止推理时每个 token 重置 ssm_state / kv_cache。状态按 (r, layer) 跨 token 持久，仅新序列 reset()。</p></div></li>
+            <li><div><p>禁止只在输出乘 token_mask。SSM 内部递推必须 torch.where 屏蔽状态写入。</p></div></li>
+            <li><div><p>禁止所有物理块共享一个 state 变量。每块 states[i] 独立，维度/语义不同。</p></div></li>
+            <li><div><p>禁止递归注意力 KV 跨轮共享。kv_cache[r][layer] 按轮隔离。</p></div></li>
+            <li><div><p>禁止用 clamp 实现 SSM decay。用 0.1 + 0.9*sigmoid(w)。</p></div></li>
+            <li><div><p>禁止把三轮递归当独立二分类。深度有序，depth=2 执行 1、2 轮，跳过第 3 轮。</p></div></li>
+            <li><div><p>禁止测试 1/5 在 BF16 下用统一 &lt;1e-4。FP32 严格，BF16 按分布并检查是否随长度放大。</p></div></li>
+            <li><div><p>禁止在 v3.2 上增加模块或改参数量。修改需新版本 + 重跑全部回归测试。</p></div></li>
+          </ol>
+          <h3>4.3 强制对照组</h3>
+          <p>同步训练一个同参数量（≈64.9M）、同 token（2.6 亿）、同 seq_len 的普通 Transformer，用于隔离 HRLM 收益来源（递归 / SSM / 动态深度 / 更大 FFN）——否则训练成功也无法归因。</p>
+          <div class="tbl-card"><div class="tbl-scroll">
+            <table class="tbl" aria-label="对照组配置">
+              <thead><tr><th scope="col">参数</th><th scope="col">取值</th><th scope="col">说明</th></tr></thead>
+              <tbody>
+                <tr><td class="k">架构</td><td class="lj">普通 Transformer</td><td class="big">无递归、无 SSM、无 Router</td></tr>
+                <tr><td class="k">层数</td><td class="big">12</td><td class="big">—</td></tr>
+                <tr><td class="k">d_model</td><td class="big">512</td><td class="big">与 HRLM 相同</td></tr>
+                <tr><td class="k">d_ff</td><td class="big">2,304</td><td class="big">与 HRLM 相同</td></tr>
+                <tr><td class="k">n_heads</td><td class="big">8</td><td class="big">—</td></tr>
+                <tr><td class="k">位置编码</td><td class="big">标准 RoPE 全维度</td><td class="big">—</td></tr>
+                <tr><td class="k">参数量</td><td class="big">≈64.9M</td><td class="big">与 HRLM 对齐</td></tr>
+                <tr><td class="k">训练 Token</td><td class="big">2.6 亿</td><td class="big">与 HRLM 相同</td></tr>
+                <tr><td class="k">seq_len</td><td class="big">512 → 1024</td><td class="big">与 HRLM 相同</td></tr>
+                <tr><td class="k">SFT</td><td class="big">647k × 2 epoch</td><td class="big">与 HRLM 相同</td></tr>
+              </tbody>
+            </table>
+          </div></div>
+          <h3>4.4 快速复现清单</h3>
+          <ul class="ck-list">
+            <li>按 §1 建模型，参数核对 64.86M</li>
+            <li>实现 PhysicalBlock.forward，内部两条残差</li>
+            <li>实现 SSM 屏蔽写入</li>
+            <li>实现训练路径：阶段 A run_recursive / 阶段 B/C compute_candidates</li>
+            <li>实现推理路径：InferenceState + step</li>
+            <li>跑 11 项回归测试，FP32 先过再切 BF16</li>
+            <li>预训练 2.6 亿 Token，监控 §3.2 指标</li>
+            <li>SFT 647k × 2 epoch，第 1 epoch 后评估</li>
+            <li>同步跑普通 Transformer 对照组</li>
+            <li>对比：loss / 意图准确率 / 推理延迟 / 4K 长上下文</li>
+          </ul>
+        </section>
+
+        <section class="p-sec reveal" id="p-target">
+          <h2>5 · 目标模型：LingJie-Chat-v2-Beta</h2>
+          <div class="target-card">
+            <span class="tc-status">即将训练 · 预览</span>
+            <h3>LingJie-Chat-v2-Beta</h3>
+            <p>将基于冻结的 HRLM v3.2 架构与 LingJie-P.T.-small × LingJie-SFT-Cot-small 数据体系训练，产出约 65M 参数的中文对话模型。训练完成后，按站点惯例完整开源权重、训练脚本、模型代码与数据集，并提供一条命令复现。</p>
+            <div class="spec-row"><span class="k">基座架构</span><span class="v">HRLM v3.2 · 64.863M</span></div>
+            <div class="spec-row"><span class="k">预训练</span><span class="v">2.6 亿 token</span></div>
+            <div class="spec-row"><span class="k">SFT</span><span class="v">647,136 × 2 epoch</span></div>
+            <div class="spec-row"><span class="k">对照组</span><span class="v">同规模普通 Transformer</span></div>
+            <div class="spec-row"><span class="k">发布物</span><span class="v">权重 + 脚本 + 代码 + 数据</span></div>
+          </div>
+          <p class="note">本页为预览版，不含评测结果；所有数值均来自已冻结的内部规范，训练完成后补充实测数据。</p>
+        </section>
+
+        <section class="p-sec reveal" id="p-cite">
+          <h2>引用与资源</h2>
+          <div class="code">LingJie 团队（开发者：9178nekomc）.
+HRLM v3.2 × LingJie 数据体系技术预览（预览版 v0.9）.
+LingJie.xyz, 2026.</div>
+          <h3>一句话核对</h3>
+          <div class="code">V=48K，d_emb=192，d_model=512，d_ff=2304，d_state=128，10 块（attn 在 2/5/8），
+递归 3 次，窗口 4K，RoPE 0.25，总参 64.86M；预训练 2.6 亿 Token（220K token/batch，
+1182 步，lr 3e-4，warmup 300）；SFT 647k × 2 epoch（batch 64，lr 1e-4，warmup 50）；
+Router A/B/C 三阶段；scale=0.158；11 项回归测试全过再起跑。</div>
+          <div class="paper-links">
+            <a class="btn btn-primary btn-sm" href="https://github.com/9178nekomc" target="_blank" rel="noopener">GitHub · 9178nekomc</a>
+            <button class="btn btn-ghost btn-sm" data-goto="open">开源资产</button>
+            <button class="btn btn-ghost btn-sm" data-goto="models">模型库</button>
+          </div>
+        </section>
+
+        <div class="page-nav">
+          <button class="pn-btn" data-goto="home"><span class="pn-dir">PREV · 上一页</span><span class="pn-name"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>首页</span></button>
+          <button class="pn-btn next" data-goto="philosophy"><span class="pn-dir">NEXT · 下一页</span><span class="pn-name">理念<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- SECTION: footer -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#/home" data-goto="home">
+          <svg viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="2" width="24" height="24" rx="7" fill="none" stroke="#16181d" stroke-width="2"/><path d="M14 6.5C17 10 17 18 14 21.5C11 18 11 10 14 6.5Z" fill="#0e7a4f"/></svg>
+          LingJie<span class="tld">.xyz</span>
+        </a>
+        <p>专注于窄域的小模型训练团队。创新架构，降本增效，完整开源。由开发者 9178nekomc 发起并维护。</p>
+      </div>
+      <div class="foot-col">
+        <h4>页面</h4>
+        <button data-goto="philosophy">理念</button>
+        <button data-goto="arch">架构</button>
+        <button data-goto="open">开源</button>
+        <button data-goto="repro">复现</button>
+      </div>
+      <div class="foot-col">
+        <h4>更多</h4>
+        <button data-goto="cost">成本计算器</button>
+        <button data-goto="models">窄域模型库</button>
+        <button data-goto="paper">技术论文 · HRLM v3.2</button>
+        <button data-goto="about">关于开发者</button>
+        <a href="https://github.com/9178nekomc" target="_blank" rel="noopener">GitHub · 9178nekomc</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 LingJie.xyz · 探索 AGI 的另外一面</span>
+      <span class="mono">页面数据来自真实训练记录；未发布的模型已明确标注状态。</span>
+    </div>
+  </div>
+</footer>
+
+<!-- SECTION: drawer -->
+<div class="scrim" id="drawerScrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="模型详情">
+  <div class="drawer-head">
+    <h3 id="drawerName"></h3>
+    <button class="icon-btn" id="drawerClose" aria-label="关闭详情">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<button id="toTop" aria-label="回到顶部">
+  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+</button>
+<div id="toast" role="status"></div>
+
+<script>
+/* SECTION: utils */
+(function(){
+'use strict';
+var $ = function(s){ return document.querySelector(s); };
+var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function el(tag, cls, text){
+  var n = document.createElement(tag);
+  if(cls) n.className = cls;
+  if(text !== undefined) n.textContent = text;
+  return n;
+}
+var CHECK_SVG = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+var toastTimer = null;
+function showToast(msg){
+  var t = $('#toast');
+  t.innerHTML = CHECK_SVG;
+  t.appendChild(document.createTextNode(msg));
+  t.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+function copyText(text, okMsg){
+  function done(){ showToast(okMsg || '已复制到剪贴板'); }
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ showToast('复制失败，请手动选择文本'); }
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, fallback);
+  }else{ fallback(); }
+}
+/* SECTION: router */
+var PAGES = [
+  {id:'home', label:'首页'},
+  {id:'philosophy', label:'理念'},
+  {id:'arch', label:'架构'},
+  {id:'open', label:'开源'},
+  {id:'repro', label:'复现'},
+  {id:'cost', label:'成本'},
+  {id:'models', label:'模型'},
+  {id:'doc', label:'技术报告'},
+  {id:'paper', label:'论文'},
+  {id:'about', label:'关于'}
+];
+var PAGE_IDS = PAGES.map(function(p){ return p.id; });
+var currentPage = 'home';
+var navbar = $('#navbar'), navToggle = $('#navToggle'), toTop = $('#toTop');
+var pendingDoc = null;
+function pageFromHash(){
+  var h = (location.hash || '').replace(/^#\/?/, '');
+  if(h.indexOf('doc/') === 0){ pendingDoc = h.slice(4); return 'doc'; }
+  return PAGE_IDS.indexOf(h) >= 0 ? h : 'home';
+}
+function revealIn(view){
+  var items = view.querySelectorAll('.reveal');
+  if(reduced){
+    items.forEach(function(n){ n.classList.add('in'); });
+    return;
+  }
+  items.forEach(function(n){ n.classList.remove('in'); });
+  void view.offsetWidth;
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      items.forEach(function(n){ n.classList.add('in'); });
+    });
+  });
+}
+function closeMenu(){
+  navbar.classList.remove('menu-open');
+  navToggle.setAttribute('aria-expanded','false');
+  navToggle.setAttribute('aria-label','打开菜单');
+}
+function showPage(id){
+  if(PAGE_IDS.indexOf(id) < 0) id = 'home';
+  var changed = id !== currentPage;
+  currentPage = id;
+  $$('.view').forEach(function(v){ v.classList.toggle('active', v.id === 'view-' + id); });
+  $$('.nav-link').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-goto') === id); });
+  var p = PAGES.filter(function(x){ return x.id === id; })[0];
+  document.title = (id === 'home' ? 'LingJie · 探索 AGI 的另外一面' : p.label + ' · LingJie');
+  closeMenu();
+  closeDrawer();
+  syncBanner();
+  window.scrollTo({top:0, behavior:'auto'});
+  var view = $('#view-' + id);
+  revealIn(view);
+  if(id === 'repro') startTermOnce();
+  if(id === 'doc') renderDoc(pendingDoc);
+  var wantHash = (id === 'doc' && pendingDoc) ? '#/doc/' + pendingDoc
+                                              : '#/' + id;
+  if(changed && location.hash !== wantHash){
+    try{ history.replaceState(null, '', wantHash); }catch(e){ location.hash = wantHash; }
+  }
+}
+function navigate(id){
+  if(PAGE_IDS.indexOf(id) < 0) return;
+  if(location.hash === '#/' + id){ showPage(id); }
+  else{ location.hash = '#/' + id; }
+}
+window.addEventListener('hashchange', function(){
+  var h = location.hash;
+  if(h && h.indexOf('#/') !== 0) return;
+  showPage(pageFromHash());
+});
+document.addEventListener('click', function(e){
+  var t = e.target.closest ? e.target.closest('[data-goto]') : null;
+  if(!t) return;
+  e.preventDefault();
+  navigate(t.getAttribute('data-goto'));
+});
+navToggle.addEventListener('click', function(){
+  var open = navbar.classList.toggle('menu-open');
+  navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  navToggle.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
+});
+var ticking = false;
+window.addEventListener('scroll', function(){
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(function(){
+    toTop.classList.toggle('show', (window.scrollY || window.pageYOffset) > 500);
+    ticking = false;
+  });
+}, {passive:true});
+toTop.addEventListener('click', function(){
+  window.scrollTo({top:0, behavior: reduced ? 'auto' : 'smooth'});
+});
+/* SECTION: announce banner */
+var announce = $('#announce');
+var bannerDismissed = false;
+function syncBanner(){
+  var show = currentPage === 'home' && !bannerDismissed;
+  document.body.classList.toggle('has-banner', show);
+  if(show){
+    document.documentElement.style.setProperty('--banner-h', announce.offsetHeight + 'px');
+  }
+}
+$('#annOpen').addEventListener('click', function(){ navigate('paper'); });
+$('#annClose').addEventListener('click', function(){
+  bannerDismissed = true;
+  syncBanner();
+});
+window.addEventListener('resize', function(){
+  if(document.body.classList.contains('has-banner')){
+    document.documentElement.style.setProperty('--banner-h', announce.offsetHeight + 'px');
+  }
+});
+/* SECTION: paper toc */
+document.addEventListener('click', function(e){
+  var t = e.target.closest ? e.target.closest('[data-scroll]') : null;
+  if(!t) return;
+  var sec = document.getElementById(t.getAttribute('data-scroll'));
+  if(sec) sec.scrollIntoView({behavior: reduced ? 'auto' : 'smooth', block:'start'});
+});
+if('IntersectionObserver' in window){
+  var tocBtns = $$('.paper-toc button');
+  var tocSpy = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        tocBtns.forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-scroll') === en.target.id); });
+      }
+    });
+  }, {rootMargin:'-15% 0px -75% 0px'});
+  $$('.p-sec').forEach(function(s){ tocSpy.observe(s); });
+}
+/* SECTION: hero copy */
+$('#heroCopy').addEventListener('click', function(){
+  var btn = this;
+  copyText($('#heroCmd').textContent.trim(), '仓库地址已复制');
+  btn.classList.add('copied');
+  setTimeout(function(){ btn.classList.remove('copied'); }, 1600);
+});
+/* SECTION: architecture */
+var ARCH = [
+  {en:'FACTORED EMBEDDING', title:'因子化绑定嵌入', desc:'只存一张 48000 × 192 的嵌入表，输入侧上投影到 512 维，输出侧再下投影回 192 并与同一张表相乘。嵌入参数从 24.6M 压到 9.2M。', points:['嵌入表 48000 × 192 = 9.216M，输入输出共用','上投影后加 1e-6 × normalize(h)，避免门控骨干吃精确零输入','输出乘可学习 logit_scale（初值 √192 ≈ 13.86），首步 loss 12.1（lnV = 10.78）'], chips:['9.216M 嵌入','输入输出绑定','logit_scale √192']},
+  {en:'RECURSIVE SHARING', title:'递归权重共享', desc:'只有 10 个物理块，但最多跑 3 轮，同一套权重被反复复用。小参数量换来更深的有效计算路径。', points:['物理块 10 个，最大递归 3 轮','每轮内部状态清零、块间参数共享','残差由块内部完成，递归核心只负责轮次与状态生命周期'], chips:['10 块 × 3 轮','权重共享','深层计算']},
+  {en:'GATED DELTA NET', title:'门控 Delta 网络 ×7', desc:'块 0/1/3/4/6/7/9 是 GatedDeltaNet：状态按 token 递推，衰减是 sigmoid 参数化的按头标量，状态写入必须被 token_mask 屏蔽。', points:['decay = 0.1 + 0.9 × sigmoid(w)，affine sigmoid，禁止 clamp','状态 [B, H, K, V]，候选写回用 torch.where(mask, new, old)','分块扫描把块内写成纯 matmul，512 token 只走 16 次循环'], chips:['7 个块','decay 0.1~1.0','屏蔽写入']},
+  {en:'HYBRID MAMBA-2 + ATTN', title:'Mamba-2 + 部分 RoPE 滑窗', desc:'块 2/5/8 是双分支并行：一路 Mamba-2 对角状态空间，一路滑窗注意力；注意力只有前 25% 头维度加 RoPE，其余 NoPE。', points:['窗口 4096，QK-Norm 按头归一','head_dim 64 中只有前 16 维加 RoPE','Mamba-2：d_state 128，共用 B/C（ngroups=1），dt 走 softplus'], chips:['3 个块','窗口 4096','RoPE 25%']},
+  {en:'DEPTH ROUTER', title:'深度路由（1/2/3 轮）', desc:'Router 逐 token 判断这个 token 值不值得多算几轮，把算力按难度分配，而不是全序列一个深度。', points:['RMSNorm → Dropout(0.1) → Linear(512→3)','辅助损失 = α·熵正则 + β·均衡正则，阶段 C 降低权重让分布自然分化','三阶段课程：A 全深度预热 / B 软路由退火 / C 直通硬路由'], chips:['3 个桶','逐 token 决策','熵 + 均衡正则']},
+  {en:'STATEFUL EQUIVALENCE', title:'训练 / 推理严格等价', desc:'推理要保持 [r][layer] 二维状态，训练和推理必须逐元素对得上——否则一切都是自欺欺人。', points:['缓存一致性：全序列 24 token × 10 层 × 3 轮，逐元素差 3.1e-6','候选输出完整性：h1/h2/h3 与全深度前向逐元素差 0.0','prefill 与逐 token 解码：最后一位 logits 差 5.2e-5'], chips:['3.1e-6 一致性','11 项回归测试','prefill 5.2e-5']}
+];
+var archIdx = 0;
+var archSteps = $$('.arch-step');
+var archPanel = $('#archPanel');
+function renderArch(){
+  var d = ARCH[archIdx];
+  archSteps.forEach(function(n,i){
+    n.classList.toggle('on', i===archIdx);
+    n.setAttribute('aria-selected', i===archIdx ? 'true' : 'false');
+  });
+  $('#archEn').textContent = d.en;
+  $('#archTitle').textContent = d.title;
+  $('#archDesc').textContent = d.desc;
+  var ul = $('#archPoints'); ul.textContent = '';
+  d.points.forEach(function(pt){ ul.appendChild(el('li','',pt)); });
+  var cw = $('#archChips'); cw.textContent = '';
+  d.chips.forEach(function(c){ cw.appendChild(el('span','ap-chip',c)); });
+  if(!reduced){ archPanel.classList.remove('swap'); void archPanel.offsetWidth; archPanel.classList.add('swap'); }
+}
+archSteps.forEach(function(n){
+  var i = parseInt(n.getAttribute('data-i'),10);
+  n.addEventListener('click', function(){ archIdx = i; renderArch(); });
+});
+$('#archSteps').addEventListener('keydown', function(e){
+  if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  e.preventDefault();
+  archIdx = (archIdx + (e.key==='ArrowRight' ? 1 : ARCH.length-1)) % ARCH.length;
+  renderArch();
+  archSteps[archIdx].focus();
+});
+renderArch();
+/* SECTION: terminal */
+var TERM_MODELS = [
+  {id:'pretrain', label:'预训练', cmd:'HRLM_COMPILE_SCAN=1 python -m hrlm.train --stage pretrain --arch hrlm --tok artifacts/tokenizer.json --data artifacts/pretrain --out runs/hrlm_pre --seq-len 512 --micro-batch 32 --tokens-per-step 220000 --total-tokens 260000000', dataset:'artifacts/pretrain（3.78 亿 token）', metric:'1181 步 · 2.6 亿 token · 20.6K token/s', time:'≈ 3.6 小时', vram:'≈ 8 GB'},
+  {id:'sft', label:'SFT', cmd:'python -m hrlm.train --stage sft --arch hrlm --tok artifacts/tokenizer.json --data artifacts/sft --out runs/hrlm_sft --sft-batch 64 --epochs 2 --init runs/hrlm_pre/ckpt_latest.pt', dataset:'artifacts/sft（647,136 条）', metric:'loss 只算 [思考]…[/回复] 段', time:'≈ 1.5 小时', vram:'≈ 8 GB'}
+];
+var termModel = TERM_MODELS[0], termTimers = [], termStarted = false;
+var termBody = $('#termBody'), termCmd = $('#termCmd'), termStatus = $('#termStatus');
+TERM_MODELS.forEach(function(m,i){
+  var b = el('button','term-chip'+(i===0?' on':''), m.label);
+  b.addEventListener('click', function(){
+    termModel = m;
+    $$('.term-chip').forEach(function(c){ c.classList.remove('on'); });
+    b.classList.add('on');
+    runTerm();
+  });
+  $('#termChips').appendChild(b);
+});
+function termLater(fn, ms){ var id=setTimeout(fn,ms); termTimers.push(id); return id; }
+function termClear(){ termTimers.forEach(clearTimeout); termTimers=[]; }
+function termLine(type, text){
+  var d = el('div','tl '+type,text);
+  termBody.appendChild(d);
+  termBody.scrollTop = termBody.scrollHeight;
+}
+function termCmdText(){ return termModel.cmd; }
+function termFinish(){
+  termStatus.textContent='完成';
+  termStatus.className='term-status done';
+  var box = el('div','term-done');
+  box.appendChild(el('div','td-title','阶段完成 · ckpt_latest.pt 已落盘'));
+  var chips = el('div','td-chips');
+  chips.appendChild(el('span','td-chip','耗时 '+termModel.time));
+  chips.appendChild(el('span','td-chip','峰值显存 '+termModel.vram));
+  chips.appendChild(el('span','td-chip','每 250 步自动存档'));
+  box.appendChild(chips);
+  termBody.appendChild(box);
+  termBody.scrollTop = termBody.scrollHeight;
+}
+function termEmit(){
+  var m = termModel;
+  var lines = [
+    ['dim','arch hrlm | params 64.8741M | device cuda | vocab 48000'],
+    ['info','pretrain: 1181 steps, 220000 tok/step, seq 512 -> 1024@70%'],
+    ['ok','数据 '+m.dataset+' · 已打包（uint16 memmap）'],
+    ['dim','step    10 | loss 8.9302 | lr 3.30e-05 | gnorm 3.114 | A'],
+    ['dim','step    50 | loss 7.4188 | lr 1.30e-04 | gnorm 2.877 | A'],
+    ['info','probe | rms_ratio 1.03~1.39 | depth [0.338, 0.342, 0.320]']
+  ];
+  var delay = 0;
+  lines.forEach(function(ln){
+    delay += 340;
+    termLater(function(){ termLine(ln[0],ln[1]); }, delay);
+  });
+  delay += 340;
+  termLater(function(){
+    var tail = [
+      ['info','    saved -> runs/' + (m.id === 'sft' ? 'hrlm_sft' : 'hrlm_pre') + '/ckpt_latest.pt'],
+      ['data',m.metric],
+      ['ok','完成：耗时 '+m.time+' · 峰值显存 '+m.vram]
+    ];
+    var d2 = 0;
+    tail.forEach(function(ln){
+      d2 += 360;
+      termLater(function(){ termLine(ln[0],ln[1]); }, d2);
+    });
+    termLater(termFinish, d2+420);
+  }, delay);
+}
+function runTerm(){
+  termClear();
+  termBody.textContent = '';
+  termCmd.textContent = '';
+  termStatus.textContent='运行中';
+  termStatus.className='term-status run';
+  var cmd = termCmdText();
+  if(reduced){
+    termCmd.textContent = cmd;
+    termLine('dim','环境检查 · Python 3.11 · torch 2.x · 单卡 RTX 4090');
+    termLine('ok','代码 / 脚本 / 数据集 / 权重全部就绪');
+    termLine('data',termModel.metric);
+    termFinish();
+    return;
+  }
+  for(var i=0;i<cmd.length;i++){
+    (function(idx){
+      termLater(function(){
+        termCmd.textContent = cmd.slice(0, idx+1);
+        if(idx === cmd.length-1) termLater(termEmit, 380);
+      }, 80 + idx*30);
+    })(i);
+  }
+}
+function startTermOnce(){
+  if(termStarted) return;
+  termStarted = true;
+  runTerm();
+}
+$('#termCopy').addEventListener('click', function(){ copyText(termCmdText(), '命令已复制'); });
+$('#termRun').addEventListener('click', runTerm);
+termCmd.textContent = termCmdText();
+/* SECTION: cost calculator */
+var costCalls = $('#costCalls'), costTier = $('#costTier');
+function fmtMoney(n){ return '¥' + Math.round(n).toLocaleString('zh-CN'); }
+function fmtCalls(n){
+  return n >= 10000 ? (Math.round(n/1000)/10).toFixed(1)+' 万次/日' : n.toLocaleString('zh-CN')+' 次/日';
+}
+function updateCost(){
+  var v = Number(costCalls.value);
+  var calls = Number((1000*Math.pow(500, v/100)).toPrecision(2));
+  var price = Number(costTier.value);
+  var api = calls*30*price;
+  var local = 1140 + calls*30*0.0002;
+  $('#costCallsLabel').textContent = fmtCalls(calls);
+  $('#costPriceLabel').textContent = '¥'+price;
+  $('#costApiVal').textContent = fmtMoney(api);
+  $('#costLocalVal').textContent = fmtMoney(local);
+  var max = Math.max(api, local);
+  $('#costApiBar').style.width = Math.max(3, api/max*100)+'%';
+  $('#costLocalBar').style.width = Math.max(3, local/max*100)+'%';
+  var ratio = api/local;
+  if(ratio >= 1){
+    $('#costRatio').textContent = '≈ '+ratio.toFixed(1)+' 倍';
+    $('#costRatioNote').textContent = '同样的调用规模，LingJie 本地部署的月成本约为大模型 API 的 1/'+ratio.toFixed(1)+'。调用越稳定，省得越多。';
+  }else{
+    $('#costRatio').textContent = '调用量尚小';
+    $('#costRatioNote').textContent = '当前规模下 API 更划算；本地部署的优势在稳定高频场景才会显现——把滑块往右拖试试。';
+  }
+  $$('#costPresets .preset').forEach(function(b){
+    b.classList.toggle('on', Number(b.getAttribute('data-calls')) === calls);
+  });
+}
+costCalls.addEventListener('input', updateCost);
+costTier.addEventListener('change', updateCost);
+$('#costPresets').addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('.preset') : null;
+  if(!b) return;
+  var calls = Number(b.getAttribute('data-calls'));
+  var v = Math.round(100*Math.log(calls/1000)/Math.log(500));
+  costCalls.value = Math.max(0, Math.min(100, v));
+  updateCost();
+});
+updateCost();
+/* SECTION: models data */
+var MODELS = [
+  {id:'chat-v1-flash', name:'LingJie-Chat-v1-Flash', status:'archived',
+   statusText:'已归档', dom:'超小对话基线', catLabel:'传统 MoE',
+   params:'超小（稀疏激活）', ctx:'—', size:'未发布', quant:'—', hw:'单卡',
+   dataset:'早期基线语料', dataDesc:'无独立数据集发布；用于对照。',
+   metric:'无技术报告，未做公开评测。',
+   desc:'早期基线：直接套传统 MoE 稀疏结构，没有自研架构，也没有技术报告。它的作用是对照——证明照抄主流结构在超小参数下拿不到想要的效果。'},
+  {id:'code-v1-pro', name:'LingJie-Code-v1-Pro', status:'ok',
+   statusText:'已发布 · 有技术报告', dom:'窄域代码生成', catLabel:'JAM 架构',
+   params:'202M', ctx:'—', size:'≈0.4 GB（FP16）', quant:'—', hw:'单卡 ≥24GB',
+   dataset:'≥50 万条六层数据 + 100 个代码模板',
+   dataDesc:'100 个模板与沙箱共享同一份 ground truth；沙箱同时做 ast.parse 与 RestrictedPython 校验。',
+   metric:'端到端验收 97.5%；训练/推理缓存逐元素一致性 2.4e-6。',
+   desc:'全手写、从随机初始化训练：GQA(8Q/2KV)+RoPE、深度因果卷积 k=5、SwiGLU，五级级联决策头，Intent 置信度 <0.75 直接拒答。'},
+  {id:'code-v2-ast', name:'LingJie-Code-v2-AST', status:'fail',
+   statusText:'失败品', dom:'AST 节点树生成', catLabel:'40 个 AST 原子节点',
+   params:'—', ctx:'—', size:'未发布', quant:'—', hw:'—',
+   dataset:'算法 AST 模板 20 个', dataDesc:'元数据 = 类型化 AST 节点树；CoT 改为 11 个判断点分支树。',
+   metric:'未通过验收：三次训练全部产出非法 AST。',
+   desc:'把业务动作库换成 40 个 Python AST 原子节点。死因是括号配对——Dyck 语言在自回归生成下必须自己维持括号栈，exposure bias 一放大整棵树就崩。'},
+  {id:'code-v3-jam-xl', name:'LingJie-Code-v3-JAM-XL', status:'fail',
+   statusText:'失败品', dom:'JAM + MoE 大改', catLabel:'JAM 架构大改',
+   params:'—', ctx:'—', size:'未发布', quant:'—', hw:'—',
+   dataset:'同 v2', dataDesc:'沿用 v2 的 CoT/AST 数据口径。',
+   metric:'验收 1/14；moe_aux ≡ 1.0（路由完全均匀，router 没学会）。',
+   desc:'在 JAM 上引入 MoE（1 共享专家 + 4 路由专家 top-2）。两个死因：路由塌缩，以及 loss mask 沿用 v1 导致 85% 算力从未被监督。'},
+  {id:'code-v4-dense', name:'LingJie-Code-v4-Dense', status:'fail',
+   statusText:'失败品', dom:'动作流代码生成', catLabel:'42×1024 稠密',
+   params:'490.9M', ctx:'—', size:'未发布', quant:'—', hw:'单卡 ≥48GB',
+   dataset:'448,951 样本 / 1.947 亿 token',
+   dataDesc:'动作流表示：40 个专属 opcode + 参数槽 + 显式子节点计数 + <END>，取消括号配对。',
+   metric:'验收 6/14（42.9%），节点覆盖 20/40；AST 分类 loss 3.69 → 0.0047。',
+   desc:'表示层换了、格式学会了，但能力层没有：简单需求会生成空 Module，Intent 池化点在训练与推理时不匹配。'},
+  {id:'chat-v2-beta', name:'LingJie-Chat-v2-Beta', status:'preview',
+   statusText:'预览版 · 训练中', dom:'中文对话 + 基础数学 CoT', catLabel:'HRLM v3.2',
+   params:'64.874M', ctx:'8K（滑窗 4K）', size:'未发布（训练中）', quant:'—',
+   hw:'单卡 RTX 4090',
+   dataset:'2.6 亿 token 预训练 + 647,136 条 SFT',
+   dataDesc:'预训练 1,184,107 篇文档；SFT 每条 assistant 都带 [思考] 块，loss 只算思考与回答。',
+   metric:'架构已冻结；11 项回归测试全过（缓存一致性 3.1e-6、候选完整性 0.0、prefill 5.2e-5）。',
+   desc:'10 个物理块 × 最多 3 轮递归权重共享；7 个 GatedDeltaNet + 3 个 Mamba-2/部分 RoPE 滑窗注意力；Router 按 token 难度分配 1~3 轮深度。'}
+];
+var modelGrid = $('#modelGrid');
+function renderModels(){
+  modelGrid.textContent = '';
+  var list = MODELS.slice();
+  list.forEach(function(m,i){
+    var card = el('article','model-card');
+    card.style.animationDelay = (i*0.05)+'s';
+    if(m.status === 'fail') card.classList.add('is-fail');
+    if(m.status === 'preview') card.classList.add('is-preview');
+    var top = el('div','mc-top');
+    top.appendChild(el('h3','',m.name));
+    card.appendChild(top);
+    var st = el('div','mc-status');
+    var badgeCls = m.status === 'fail' ? 'badge fail'
+                 : (m.status === 'preview' ? 'badge preview'
+                 : (m.status === 'archived' ? 'badge arch' : 'badge done'));
+    var b = el('span', badgeCls);
+    if(m.status === 'preview') b.appendChild(el('span','dot'));
+    b.appendChild(document.createTextNode(m.statusText));
+    st.appendChild(b);
+    st.appendChild(el('span','badge arch', m.catLabel));
+    card.appendChild(st);
+    card.appendChild(el('p','mc-desc',m.desc));
+    var meta = el('div','mc-meta');
+    var mp = el('span','','参数 '); mp.appendChild(el('b','',m.params)); meta.appendChild(mp);
+    var mc = el('span','','上下文 '); mc.appendChild(el('b','',m.ctx)); meta.appendChild(mc);
+    var ms = el('span','','权重 '); ms.appendChild(el('b','',m.size)); meta.appendChild(ms);
+    card.appendChild(meta);
+    var foot = el('div','mc-foot');
+    var detail = el('button','btn btn-primary btn-sm mc-detail',
+                    m.status === 'fail' || m.status === 'archived' ? '查看复盘论文'
+                    : (m.status === 'preview' ? '查看技术论文' : '查看技术报告'));
+    detail.setAttribute('data-id', m.id);
+    detail.setAttribute('data-doc', m.id);
+    foot.appendChild(detail);
+    if(m.status === 'ok'){
+      var cp = el('button','icon-btn mc-copy');
+      cp.setAttribute('data-cmd','git clone https://github.com/9178nekomc/LingJie-Code-v1-Beta');
+      cp.setAttribute('aria-label','复制仓库地址');
+      cp.innerHTML = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>';
+      foot.appendChild(cp);
+    }else{
+      foot.appendChild(el('span','mc-lock', m.status === 'preview' ? '训练中 · 未发布' : '仅展示 · 不提供权重'));
+    }
+    card.appendChild(foot);
+    modelGrid.appendChild(card);
+  });
+  $('#modelCount').textContent = '共 '+list.length+' 个模型 · 1 个已发布 · 1 个训练中 · 4 个失败只做展示';
+}
+modelGrid.addEventListener('click', function(e){
+  var cp = e.target.closest ? e.target.closest('.mc-copy') : null;
+  if(cp){
+    copyText(cp.getAttribute('data-cmd'), '命令已复制');
+    cp.classList.add('copied');
+    setTimeout(function(){ cp.classList.remove('copied'); }, 1600);
+    return;
+  }
+  var dt = e.target.closest ? e.target.closest('.mc-detail') : null;
+  if(dt){
+    goDoc(dt.getAttribute('data-doc'));
+  }
+});
+renderModels();
+/* SECTION: per-model papers */
+var DOCS = {
+  'chat-v1-flash': {
+    badge: 'TECH NOTE · ARCHIVE · 无正式报告',
+    title: 'LingJie-Chat-v1-Flash 技术说明',
+    subtitle: '传统 MoE 超小模型基线 —— 我们为什么从它开始，又为什么放弃它。',
+    meta: ['LingJie 团队', '开发者 · 9178nekomc', '状态 · 已归档', 'LingJie.xyz · 2026'],
+    kpis: [['传统 MoE', '架构类型'], ['超小', '参数规模'], ['无', '技术报告'], ['已归档', '状态']],
+    sections: [
+      {id: 'd1', title: '摘要', html: `
+        <p>LingJie-Chat-v1-Flash 是团队最早期的对话基线：直接采用<strong>传统 MoE（稀疏激活）</strong>结构，
+        不做任何自研架构改造，目的是先拿到一个"主流做法"的参照点。<strong>该模型没有技术报告</strong>，
+        本页只作为档案记录：它是什么、为什么被放弃、留下了什么结论。</p>`},
+      {id: 'd2', title: '1 · 结构', html: `
+        <p>沿用当时主流的小型 MoE 配方：稠密主干 + 少量路由专家，按 token 稀疏激活；训练目标为标准因果语言建模，
+        数据为早期清洗过的中文对话语料。</p>
+        <div class="tbl-wrap"><table class="tbl">
+          <tbody>
+            <tr><td class="k">架构</td><td class="big">传统 MoE（共享主干 + token 路由专家）</td></tr>
+            <tr><td class="k">参数量</td><td class="big">超小（稀疏激活，激活参数更少）</td></tr>
+            <tr><td class="k">训练目标</td><td class="big">因果 LM，中文对话语料</td></tr>
+            <tr><td class="k">技术报告</td><td class="big">无（本页为说明性档案）</td></tr>
+          </tbody>
+        </table></div>`},
+      {id: 'd3', title: '2 · 为什么放弃', html: `
+        <p>三个原因，按重要性排序：</p>
+        <p><strong>① 路由在小参数下不划算。</strong>专家数一多，每个专家分到的 token 就少，路由本身反而成了噪声来源；
+        专家数一少，MoE 退化成稠密模型，白白增加复杂度。</p>
+        <p><strong>② "照抄主流"没有复现价值。</strong>如果目标只是把公开配方跑一遍，那这条线上不会留下任何属于我们的东西。</p>
+        <p><strong>③ 没有可解释的失败路径。</strong>纯端到端对话模型出错时，你只能看输出，无法定位是路由、数据还是解码的问题。</p>`},
+      {id: 'd4', title: '3 · 留下的结论', html: `
+        <p>这条基线把后面的技术路线逼了出来：<strong>要么在架构上做出可验证的结构性收益（JAM 线），
+        要么把任务收窄到可以用确定性工具校验的范围（Code 线）</strong>。Chat v2 的"递归 + 混合状态空间"，
+        本质上也是从这里得出的——小模型不该靠加专家扩容，而该靠加深计算路径。</p>
+        <div class="ex-note">本模型不发布权重、不提供复现命令。相关结论已并入 Chat v2 的设计动机。</div>`}
+    ]
+  },
+
+  'code-v1-pro': {
+    badge: 'TECHNICAL REPORT · v1.0 · 已发布',
+    title: 'LingJie-Code-v1-Pro：JAM 架构与级联决策',
+    subtitle: '202M 参数、全手写、从随机初始化训练的窄域代码模型 —— 与"拒绝"作为一等能力。',
+    meta: ['LingJie 团队', '开发者 · 9178nekomc', '架构 · JAM', '权重与代码已公开'],
+    kpis: [['202M', '参数量'], ['97.5%', '端到端验收'], ['2.4e-6', '缓存一致性'], ['5 级', '级联决策']],
+    sections: [
+      {id: 'd1', title: '摘要', html: `
+        <p>我们训练了一个 <strong>202M</strong> 参数的窄域代码模型，<strong>不加载任何预训练权重</strong>，
+        全部架构手写实现，不使用 <span class="mono">transformers.AutoModel</span> 或
+        <span class="mono">nn.TransformerEncoderLayer</span>。目标不是"通用写代码"，而是把
+        <em>意图识别 → 代码生成 → 语法/沙箱校验 → 修复</em> 做成一条可审计的链路，并让
+        <strong>拒答成为一等能力</strong>而不是兜底。</p>
+        <p>最终端到端验收 <strong>97.5%</strong>；训练/推理在双状态缓存下逐元素一致性
+        <strong>2.4e-6</strong>。</p>`},
+      {id: 'd2', title: '1 · JAM 架构', html: `
+        <p>JAM 块由三路组成，全部 Pre-norm RMSNorm + 残差 + LayerScale（γ 初始严格 1e-4）：</p>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>组件</th><th>配置</th><th>作用</th></tr></thead>
+          <tbody>
+            <tr><td class="k">注意力</td><td class="big">GQA，8 查询头 / 2 KV 头 + RoPE</td><td class="big">长程依赖，KV 显存省 4×</td></tr>
+            <tr><td class="k">卷积</td><td class="big">深度可分离因果卷积，k=5，严格左补</td><td class="big">局部语法模式</td></tr>
+            <tr><td class="k">前馈</td><td class="big">SwiGLU，d_ff = 2.13 × d_model</td><td class="big">容量主体</td></tr>
+          </tbody>
+        </table></div>
+        <p>LayerScale 初始 1e-4 让每个残差分支起步时几乎不改变主干，深模型的方差不会在初始化阶段炸掉——
+        这是我们从第一版就在守的一条线。</p>`},
+      {id: 'd3', title: '2 · 五级级联决策', html: `
+        <p>模型不是一个头输出一切，而是五级级联，每级都有明确的判定语义：</p>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>级</th><th>头</th><th>类别</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr><td class="k">1</td><td class="big">Intent</td><td class="big">2</td><td class="big">是不是代码请求；置信度 &lt; 0.75 → Cannot</td></tr>
+            <tr><td class="k">2</td><td class="big">Parser</td><td class="big">4（token 级）</td><td class="big">语句角色</td></tr>
+            <tr><td class="k">3</td><td class="big">Verb</td><td class="big">20</td><td class="big">动作类型</td></tr>
+            <tr><td class="k">4</td><td class="big">Template</td><td class="big">100</td><td class="big">模板选择</td></tr>
+            <tr><td class="k">5</td><td class="big">Critic</td><td class="big">2</td><td class="big">一致性审查</td></tr>
+          </tbody>
+        </table></div>
+        <p>配合 4 个拒答模板：超出能力边界时，模型给出<strong>明确的原因</strong>（不是代码问题／难度超纲／
+        做不到原创／无法理解），而不是编一段能跑但不对的代码。</p>`},
+      {id: 'd4', title: '3 · 数据与沙箱', html: `
+        <p>六层数据 ≥50 万条；<strong>100 个代码模板与沙箱共享同一份 ground truth</strong>——
+        模板不手写答案，答案由沙箱执行 metadata 生成，避免"元数据和代码对不上"这类静默错误。</p>
+        <p>校验链：<span class="mono">ast.parse</span> 语法检查 + RestrictedPython 受限执行；
+        失败则进入修复循环，<strong>最多 2 轮</strong>，仍失败即判 Cannot。</p>`},
+      {id: 'd5', title: '4 · JAM-DualState Cache', html: `
+        <p>推理要跨 token 保持两样东西：注意力 KV，以及因果卷积的历史窗口。我们把卷积侧缓存设计成
+        <span class="mono">cnn_norm_history [b, d_model, 4]</span>，缓存的是 <strong>RMSNorm 之后</strong>的隐状态——
+        因为 RMSNorm 逐 token 计算，历史状态不受未来 token 影响，所以这个缓存是合法的。</p>
+        <p>验证方式不是"看起来对"，而是训练路径与推理路径<strong>逐元素比对</strong>：
+        最大绝对误差 <strong>2.4e-6</strong>。</p>`},
+      {id: 'd6', title: '5 · 验收结果', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>项目</th><th>结果</th></tr></thead>
+          <tbody>
+            <tr><td class="k">端到端验收</td><td class="big"><strong>97.5%</strong></td></tr>
+            <tr><td class="k">训练/推理一致性</td><td class="big">2.4e-6（逐元素）</td></tr>
+            <tr><td class="k">拒答</td><td class="big">4 类模板，Intent 置信度门限 0.75</td></tr>
+            <tr><td class="k">沙箱</td><td class="big">ast.parse + RestrictedPython</td></tr>
+          </tbody>
+        </table></div>`},
+      {id: 'd7', title: '6 · 局限与后话', html: `
+        <p>v1 的成功有一个前提：<strong>任务被收窄到 100 个模板覆盖的范围</strong>。它不会写模板之外的代码。
+        这正是 v2 想解决的问题——把动作库换成 AST，让"动作"不再需要人工枚举。</p>
+        <p>结果是三次失败（见 LingJie-Code-v2 / v3 / v4 的报告）。回头看，v1 真正验证的不是"模型会写代码"，
+        而是<strong>闭集动作 + 确定性模板 + 沙箱校验</strong>这条工程路径是可靠的。</p>`}
+    ]
+  },
+
+  'code-v2-ast': {
+    badge: 'TECHNICAL REPORT · FAILED · 复盘',
+    title: 'LingJie-Code-v2-AST：当表示要求模型维护括号栈',
+    subtitle: '40 个 AST 原子节点、11 个判断点的分支决策树 —— 以及它为什么必然失败。',
+    meta: ['LingJie 团队', '开发者 · 9178nekomc', '架构 · AST 节点树', '状态 · 失败（仅展示）'],
+    kpis: [['40', 'AST 原子节点'], ['11', '判断点'], ['3 层', '决策链'], ['失败', '结论']],
+    sections: [
+      {id: 'd1', title: '摘要', html: `
+        <p>v2 的目标是<strong>消灭人工动作库</strong>：把 v1 的 20 个 Verb 换成 40 个 Python AST 原子节点（闭集，
+        动作库永不增长），元数据从"模板 + 参数"改成<strong>类型化 AST 节点树</strong>，CoT 从固定话术改成
+        由工具结果驱动的 11 个判断点分支树，决策链从 5 层压缩到 3 层（Intent / ASTParser / Critic）。</p>
+        <p>结论：<strong>表示本身是合理的，但它要求模型在自回归生成时维护一个括号栈</strong>。
+        三次完整训练全部产出非法 AST，项目终止。</p>`},
+      {id: 'd2', title: '1 · 表示设计', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <tbody>
+            <tr><td class="k">节点集</td><td class="big">40 个 AST 原子节点（闭集）</td></tr>
+            <tr><td class="k">元数据</td><td class="big">类型化 AST 节点树（含子节点列表）</td></tr>
+            <tr><td class="k">决策链</td><td class="big">Intent → ASTParser（token 级）→ Critic</td></tr>
+            <tr><td class="k">算法库</td><td class="big">20 个算法 AST 模板</td></tr>
+            <tr><td class="k">拒答</td><td class="big">4 个模板，判定由工具结果驱动</td></tr>
+          </tbody>
+        </table></div>
+        <p>相比 v1，这套设计在<strong>理论上</strong>更完备：AST 是不可再分的语义单位，子节点数量由语法决定，
+        不需要人工枚举动作组合。</p>`},
+      {id: 'd3', title: '2 · 训练设置', html: `
+        <p>沿用 JAM 主干（GQA + 因果卷积 + SwiGLU + LayerScale），保留双状态缓存；
+        预训练 + SFT 两阶段，CoT 与 AST 全部放在 <span class="mono">&lt;resp&gt;</span> 之前。</p>`},
+      {id: 'd4', title: '3 · 失败现象', html: `
+        <p>训练 loss 能降，但生成阶段的 AST <strong>几乎必然是非法结构</strong>：括号不闭合、子节点数量错位、
+        节点嵌套层级错乱。重试（带温度）也只是换一种坏法。</p>
+        <div class="ex-reason"><b>验收结果：未通过。</b>三次独立训练，现象一致，排除随机性。</div>`},
+      {id: 'd5', title: '4 · 根因：Dyck 语言与 exposure bias', html: `
+        <p>AST 的文本序列化（括号 + 子节点列表）在形式语言意义上属于 <strong>Dyck 语言</strong>：
+        合法的前缀必须满足括号栈不变量。teacher forcing 下，模型每一步都能看到"正确的历史"，
+        所以它学到的是"给定正确前缀，下一个符号是什么"。</p>
+        <p>但在自回归生成时，模型必须<strong>自己记住自己开过多少个括号、还欠几个闭合</strong>——
+        这是一个隐式的计数器状态，而 transformer 的隐状态里并没有一个可靠的栈。
+        一旦某一步出错，后续所有步骤都在错误前缀上继续，<strong>误差不可恢复</strong>。</p>
+        <p>这不是"训练不够久"能解决的问题，而是<strong>表示要求模型做一件它结构上不擅长的事</strong>。</p>`},
+      {id: 'd6', title: '5 · 结论', html: `
+        <p>三条结论直接决定了 v3 与 v4 的路线：</p>
+        <p><strong>① 不要把"结构约束"交给模型自己维持。</strong>能用显式计数表达的，就别用配对符号。</p>
+        <p><strong>② 拒答/工具可以在表示层之外兜底，但不能替代模型的理解。</strong>我们后来明确禁止用规则去补模型的缺陷。</p>
+        <p><strong>③ 失败要记录。</strong>本页的存在就是为了让后来者不必再走一遍 Dyck 这条路。</p>`}
+    ]
+  },
+
+  'code-v3-jam-xl': {
+    badge: 'TECHNICAL REPORT · FAILED · 复盘',
+    title: 'LingJie-Code-v3-JAM-XL：路由塌缩与一次 85% 的算力浪费',
+    subtitle: 'JAM 的 MoE 大改，以及一个不会报错、只会让 loss 看起来健康的 loss mask bug。',
+    meta: ['LingJie 团队', '开发者 · 9178nekomc', '架构 · JAM + MoE', '状态 · 失败（仅展示）'],
+    kpis: [['1 共享 + 4 路由', '专家配置'], ['≡ 1.0', 'moe_aux'], ['1 / 14', '验收'], ['85%', '无效算力']],
+    sections: [
+      {id: 'd1', title: '摘要', html: `
+        <p>v3 在 JAM 上做架构级重构：引入 MoE（1 个共享专家 + 4 个路由专家，top-2 激活），
+        想把"稀疏换容量"这条路走通。结果两个致命问题同时出现：<strong>路由塌缩</strong>与
+        <strong>loss mask 沿用 v1 导致的监督缺失</strong>。验收 <strong>1/14</strong>。</p>`},
+      {id: 'd2', title: '1 · 架构改动', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <tbody>
+            <tr><td class="k">FFN</td><td class="big">共享专家 1 个 + 路由专家 4 个，top-2 激活</td></tr>
+            <tr><td class="k">路由损失</td><td class="big">辅助均衡损失，权重 0.01</td></tr>
+            <tr><td class="k">其余</td><td class="big">沿用 JAM（GQA + 因果卷积 + LayerScale + 双状态缓存）</td></tr>
+          </tbody>
+        </table></div>`},
+      {id: 'd3', title: '2 · 死因一：路由塌缩', html: `
+        <p>训练全程 <span class="mono">moe_aux ≡ 1.0</span>。这个数字很多人会读成"负载非常均衡，很好"，
+        实际上它是<strong>均匀路由的定义值</strong>——意味着 router 对任何 token 都输出相同分布，
+        也就是<strong>根本没有学到东西</strong>。</p>
+        <p>后果：MoE 退化成一个"参数更多、计算更贵、表达力没变"的稠密模型。实测效果不如同参数量的纯稠密模型。</p>
+        <div class="ex-reason"><b>判断口径：</b>辅助损失恒等于理论均匀值 = 塌缩，不是均衡。</div>`},
+      {id: 'd4', title: '3 · 死因二：loss mask 的 85%', html: `
+        <p>v2/v3 把 CoT 与 AST 放在 <span class="mono">&lt;resp&gt;</span> <strong>之前</strong>，
+        但 collate 里的 loss mask 是从 v1 抄过来的——只监督 <span class="mono">resp_pos</span> 之后的 token。</p>
+        <p>结果：CoT 与 AST 段全部落在掩码之外，<strong>约 85% 的序列从未参与梯度</strong>。模型只在学最后一段代码。</p>
+        <div class="ex-reason"><b>这类 bug 不会报错。</b>loss 曲线看起来"很健康"地在下降，因为它在下降的那部分是唯一被监督的部分。</div>`},
+      {id: 'd5', title: '4 · 定位过程：七组对照实验', html: `
+        <p>因为 loss 看起来正常，排查只能靠对照组：</p>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>#</th><th>实验</th><th>结论</th></tr></thead>
+          <tbody>
+            <tr><td class="k">1</td><td class="big">fp32 / bf16 精度对照</td><td class="big">两者 loss 完全一致，排除数值问题</td></tr>
+            <tr><td class="k">2</td><td class="big">ckpt 指纹校验</td><td class="big">权重确实在更新，排除"没训到"</td></tr>
+            <tr><td class="k">3</td><td class="big">缓存一致性</td><td class="big">2.4e-6，排除推理路径</td></tr>
+            <tr><td class="k">4</td><td class="big">npz ids vs 重新编码</td><td class="big">363 条里 93 条不一致 → 发现数据版本漂移</td></tr>
+            <tr><td class="k">5</td><td class="big">整链路重放</td><td class="big">重放得到 0.0123，手写 loss 得到 9.7 → 锁定监督</td></tr>
+            <tr><td class="k">6</td><td class="big">逐段打印掩码</td><td class="big">确认 CoT/AST 全为 -100</td></tr>
+            <tr><td class="k">7</td><td class="big">改为全序列监督</td><td class="big">loss 恢复正常量级</td></tr>
+          </tbody>
+        </table></div>`},
+      {id: 'd6', title: '5 · 结论', html: `
+        <p><strong>① 辅助损失要监控"是否恒等于均匀值"。</strong>均衡不等于塌缩，塌缩会伪装成均衡。</p>
+        <p><strong>② loss mask 必须跟着数据格式走。</strong>数据格式改了、掩码没改，是这类项目最贵的一类 bug。</p>
+        <p><strong>③ 小参数下 MoE 不划算。</strong>这条结论直接导致 v4 回到稠密，Chat v2 放弃专家扩容。</p>`}
+    ]
+  },
+
+  'code-v4-dense': {
+    badge: 'TECHNICAL REPORT · FAILED · 复盘',
+    title: 'LingJie-Code-v4-Dense：动作流解决了表示，没解决能力',
+    subtitle: '490.9M 稠密 + 40 个 opcode 的极致压缩表示 —— 格式学会了，程序没学会。',
+    meta: ['LingJie 团队', '开发者 · 9178nekomc', '架构 · 42×1024 稠密', '状态 · 失败（仅展示）'],
+    kpis: [['490.9M', '参数量'], ['0.0047', 'AST 分类 loss'], ['7~9%', 'token 成本'], ['6 / 14', '验收']],
+    sections: [
+      {id: 'd1', title: '摘要', html: `
+        <p>v4 做了两件事：把模型加宽加深到 <strong>490.9M 稠密</strong>（1024 维 × 42 层），
+        并把元数据从 AST 括号树换成<strong>动作流</strong>——用专属 opcode、固定槽位参数、显式子节点计数
+        彻底取消括号配对。技术上，表示层的问题被解决了：AST 分类 loss 从 3.69 直落到 <strong>0.0047</strong>，
+        token 成本降到 JSON 的 7~9%。</p>
+        <p>但验收只有 <strong>6/14（42.9%）</strong>。结论很直接：<em>换表示能让模型学会格式，不能让它学会写程序。</em></p>`},
+      {id: 'd2', title: '1 · 架构', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <tbody>
+            <tr><td class="k">总参数</td><td class="big">490.9M（稠密）</td></tr>
+            <tr><td class="k">布局</td><td class="big">d_model 1024 × 42 层</td></tr>
+            <tr><td class="k">注意力</td><td class="big">16 查询头 / 4 KV 头，QK-Norm</td></tr>
+            <tr><td class="k">初始化</td><td class="big">残差投影缩放（o_proj / down_proj × 0.02/√(2L)）</td></tr>
+            <tr><td class="k">词表</td><td class="big">8,259（含 40 个专属 opcode）</td></tr>
+          </tbody>
+        </table></div>`},
+      {id: 'd3', title: '2 · 动作流表示', html: `
+        <p>核心思想：<strong>结构用计数表达，不用配对符号表达。</strong></p>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>元素</th><th>形式</th><th>作用</th></tr></thead>
+          <tbody>
+            <tr><td class="k">节点类型</td><td class="big"><span class="mono">&lt;OP_Type&gt;</span> 40 个专属 opcode</td><td class="big">不需要拼字符</td></tr>
+            <tr><td class="k">参数</td><td class="big"><span class="mono">&lt;A_k&gt;</span> 固定槽位 key</td><td class="big">顺序确定，无需解析</td></tr>
+            <tr><td class="k">子节点数</td><td class="big"><span class="mono">&lt;CNT&gt;N</span> 显式计数</td><td class="big">替代括号配对</td></tr>
+            <tr><td class="k">节点结束</td><td class="big"><span class="mono">&lt;END&gt;</span></td><td class="big">边界明确</td></tr>
+            <tr><td class="k">字符串值</td><td class="big"><span class="mono">&lt;S&gt;…&lt;E_S&gt;</span></td><td class="big">避免与结构 token 冲突</td></tr>
+          </tbody>
+        </table></div>
+        <p>tokens 成本降到 JSON 的 <strong>7~9%</strong>；编解码往返 13/13 通过。</p>`},
+      {id: 'd4', title: '3 · 数据', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <tbody>
+            <tr><td class="k">样本数</td><td class="big">448,951</td></tr>
+            <tr><td class="k">总 token</td><td class="big">1.947 亿</td></tr>
+            <tr><td class="k">序列</td><td class="big">&lt;task&gt;prompt &lt;cot&gt;CoT &lt;ast&gt;动作流 &lt;resp&gt;code</td></tr>
+            <tr><td class="k">监督</td><td class="big">全序列监督（修掉 v3 的掩码 bug），AST token 权重 ×3</td></tr>
+          </tbody>
+        </table></div>`},
+      {id: 'd5', title: '4 · 指标：表示层确实被解决了', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>指标</th><th>v3（括号树）</th><th>v4（动作流）</th></tr></thead>
+          <tbody>
+            <tr><td class="k">AST 分类 loss</td><td class="big">0.06（卡住不降）</td><td class="big"><strong>0.0047</strong></td></tr>
+            <tr><td class="k">生成合法性</td><td class="big">几乎必然非法</td><td class="big">结构基本合法</td></tr>
+            <tr><td class="k">token 成本</td><td class="big">基准</td><td class="big">7~9%（相对 JSON）</td></tr>
+          </tbody>
+        </table></div>
+        <p>第一次，模型能稳定生成"格式正确"的动作流。这证明 v2 的根因判断是对的。</p>`},
+      {id: 'd6', title: '5 · 验收 6/14：能力层没跟上', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>类别</th><th>通过</th><th>现象</th></tr></thead>
+          <tbody>
+            <tr><td class="k">算法（模板命中）</td><td class="big">5 / 5</td><td class="big">正确</td></tr>
+            <tr><td class="k">非标需求</td><td class="big">0 / 3</td><td class="big">生成空 Module / 误拒</td></tr>
+            <tr><td class="k">超纲拒答</td><td class="big">1 / 4</td><td class="big">拒答理由错配</td></tr>
+            <tr><td class="k">嵌套结构</td><td class="big">0 / 2</td><td class="big">空输出</td></tr>
+          </tbody>
+        </table></div>
+        <p>节点覆盖 20 / 40；<strong>总计 6/14（42.9%）</strong>。</p>`},
+      {id: 'd7', title: '6 · 失败分析', html: `
+        <p><strong>① 简单需求生成空 Module。</strong>"打印你好世界"这类请求，模型输出一个零子节点的 Module。
+        说明它学到的是"结构模板"，而不是"这个请求需要一个 print 调用"。</p>
+        <p><strong>② Intent 池化点训练/推理不一致。</strong>训练时 Intent 头池化在序列末尾（能看到 CoT 与 AST），
+        推理时却只能在 prompt 之后判定——信息集完全不同，判定自然漂移。</p>
+        <p><strong>③ 能力不是靠表示换来的。</strong>42 层 490M 在 4.5 亿 token 的窄数据上，学得会语法结构，
+        学不会"把自然语言映射成程序意图"。这需要的是数据密度与任务分解，不是更花的编码。</p>`},
+      {id: 'd8', title: '7 · 结论与遗产', html: `
+        <p>v4 之后我们停了 Code 线。三条结论直接写进了 Chat v2：</p>
+        <p><strong>① 分类头/池化点必须与推理时的信息集严格一致。</strong>这是"工具结果一致性"原则的来源。</p>
+        <p><strong>② 表示要压缩，但不能压缩掉语义。</strong>动作流在工程上很成功，但它压缩的是"怎么写"，不是"写什么"。</p>
+        <p><strong>③ 换方向前先把已有资产盘点清楚。</strong>v4 的 42×1024 稠密配方、QK-Norm、缩放初始化，
+        后来被 Chat v2 的对照实验直接复用。</p>`}
+    ]
+  }
+};
+
+function renderDoc(id){
+  var d = DOCS[id] || DOCS['code-v1-pro'];
+  $('#docBadge').textContent = d.badge;
+  $('#docTitle').textContent = d.title;
+  $('#docSubtitle').textContent = d.subtitle;
+  $('#docMeta').innerHTML = d.meta.map(function(x){ return '<span>'+x+'</span>'; }).join('');
+  $('#docKpis').innerHTML = d.kpis.map(function(k){
+    return '<div class="p-kpi"><b>'+k[0]+'</b><span>'+k[1]+'</span></div>'; }).join('');
+  $('#docToc').innerHTML = d.sections.map(function(s){
+    return '<button data-scroll="'+s.id+'">'+s.title+'</button>'; }).join('');
+  $('#docBody').innerHTML = d.sections.map(function(s){
+    return '<section class="p-sec" id="'+s.id+'"><h2>'+s.title+'</h2>'+s.html+'</section>';
+  }).join('');
+  $('#docRelated').innerHTML = '';
+  var others = ['chat-v1-flash','code-v1-pro','code-v2-ast','code-v3-jam-xl','code-v4-dense']
+    .filter(function(k){ return k !== id; });
+  others.forEach(function(k){
+    var b = el('button','btn btn-ghost btn-sm');
+    b.textContent = DOCS[k].title.split('：')[0];
+    b.addEventListener('click', function(){ goDoc(k); });
+    $('#docRelated').appendChild(b);
+  });
+  window.scrollTo({top:0, behavior:'auto'});
+}
+function goDoc(id){
+  if(id === 'chat-v2-beta'){ navigate('paper'); return; }
+  pendingDoc = id;
+  if(location.hash === '#/doc/' + id){ showPage('doc'); }
+  else{ location.hash = '#/doc/' + id; }
+}
+
+/* SECTION: drawer */
+var drawer = $('#drawer'), drawerScrim = $('#drawerScrim'), drawerBody = $('#drawerBody');
+var lastFocus = null;
+function dbSec(title){
+  var s = el('div','db-sec');
+  s.appendChild(el('h4','',title));
+  return s;
+}
+function dbRow(k, v){
+  var r = el('div','spec-row');
+  r.appendChild(el('span','k',k));
+  r.appendChild(el('span','v',v));
+  return r;
+}
+function openDrawer(m){
+  $('#drawerName').textContent = m.name;
+  drawerBody.textContent = '';
+  var s1 = dbSec('概览');
+  var tags = el('div','mc-tags');
+  tags.style.marginBottom = '12px';
+  tags.appendChild(el('span','mc-tag dom',m.dom));
+  tags.appendChild(el('span','mc-tag',m.catLabel));
+  s1.appendChild(tags);
+  s1.appendChild(el('p','db-desc',m.desc));
+  drawerBody.appendChild(s1);
+  var s2 = dbSec('规格');
+  s2.appendChild(dbRow('参数量', m.params));
+  s2.appendChild(dbRow('上下文', m.ctx));
+  s2.appendChild(dbRow('权重体积', m.size));
+  s2.appendChild(dbRow('量化版本', m.quant));
+  s2.appendChild(dbRow('训练硬件', m.hw));
+  s2.appendChild(dbRow('许可证', m.status === 'ok'
+    ? 'LingJie Public License 1.0（含 GPL-3.0 / Apache-2.0 条款）' : '未发布'));
+  drawerBody.appendChild(s2);
+  var s3 = dbSec('训练数据');
+  s3.appendChild(el('p','db-desc', m.dataset + ' · ' + m.dataDesc));
+  if(m.status === 'ok'){
+    var lic = el('div','license-strip');
+    lic.appendChild(el('span','lic','已随仓库公开'));
+    s3.appendChild(lic);
+  }
+  drawerBody.appendChild(s3);
+  var s4 = dbSec('实测结果');
+  s4.appendChild(el('p','db-desc', m.metric));
+  drawerBody.appendChild(s4);
+  if(m.status === 'ok'){
+    var s5 = dbSec('获取代码');
+    var cmdBox = el('div','db-cmd');
+    cmdBox.appendChild(el('span','prompt','$'));
+    var cloneCmd = 'git clone https://github.com/9178nekomc/LingJie-Code-v1-Beta';
+    var code = el('code','',cloneCmd);
+    cmdBox.appendChild(code);
+    var cp = el('button','icon-btn');
+    cp.setAttribute('data-cmd',cloneCmd);
+    cp.setAttribute('aria-label','复制仓库地址');
+    cp.innerHTML = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>';
+    cmdBox.appendChild(cp);
+    s5.appendChild(cmdBox);
+    drawerBody.appendChild(s5);
+    var s6 = dbSec('源码');
+    var link = el('a','db-link');
+    link.href = 'https://github.com/9178nekomc/' + m.id;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.appendChild(document.createTextNode('在 GitHub 查看仓库'));
+    link.insertAdjacentHTML('beforeend','<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>');
+    s6.appendChild(link);
+    drawerBody.appendChild(s6);
+  }else{
+    var s5b = dbSec('状态说明');
+    var note = el('p','db-desc', m.status === 'fail'
+      ? '这是一个失败品，只做展示与复盘，不提供权重、训练脚本与复现命令。完整失败原因见「模型探究」。'
+      : (m.status === 'preview'
+        ? '预览版：架构已冻结、正在进行预训练，结果未定，权重未发布。'
+        : '早期基线，已归档。'));
+    s5b.appendChild(note);
+    var gotoBtn = el('button','btn btn-ghost btn-sm',
+                     m.status === 'fail' ? '查看复盘论文' : '查看技术说明');
+    gotoBtn.addEventListener('click', function(){ closeDrawer(); goDoc(m.id); });
+    s5b.appendChild(gotoBtn);
+    drawerBody.appendChild(s5b);
+  }
+  lastFocus = document.activeElement;
+  drawer.classList.add('open');
+  drawerScrim.classList.add('open');
+  document.body.classList.add('lock');
+  $('#drawerClose').focus();
+}
+function closeDrawer(){
+  if(!drawer.classList.contains('open')) return;
+  drawer.classList.remove('open');
+  drawerScrim.classList.remove('open');
+  document.body.classList.remove('lock');
+  if(lastFocus && lastFocus.focus) lastFocus.focus();
+}
+$('#drawerClose').addEventListener('click', closeDrawer);
+drawerScrim.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeDrawer();
+});
+drawerBody.addEventListener('click', function(e){
+  var cp = e.target.closest ? e.target.closest('[data-cmd]') : null;
+  if(!cp) return;
+  copyText(cp.getAttribute('data-cmd'), '命令已复制');
+  cp.classList.add('copied');
+  setTimeout(function(){ cp.classList.remove('copied'); }, 1600);
+});
+/* SECTION: init */
+showPage(pageFromHash());
+})();
+</script>
+</body>
+</html>
