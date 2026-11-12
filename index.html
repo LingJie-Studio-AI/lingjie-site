@@ -548,18 +548,6 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
 <body>
 <a class="skip" href="#main">跳到主要内容</a>
 
-<!-- SECTION: announce -->
-<div id="announce" role="region" aria-label="训练进度提示">
-  <button class="ann-main" id="annOpen">
-    <span class="ann-tag">训练中</span>
-    <span class="ann-text">LingJie 团队自研 <b>HRLM v3.3</b> × LingJie 数据集已开源，我们将会使用它训练出 <b>LingJie-Chat-v2-Beta</b>（89.67M），目前正在单卡 A100 40G 上预训练，点击查看模型、数据集与架构详情</span>
-    <span class="ann-cta">查看论文<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-  </button>
-  <button class="ann-close" id="annClose" aria-label="关闭提示">
-    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-  </button>
-</div>
-
 <!-- SECTION: nav -->
 <header id="navbar">
   <div class="nav-inner">
@@ -604,22 +592,22 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
           <button class="btn btn-ghost" data-goto="models">浏览模型库</button>
         </div>
         <div class="hero-stats reveal d3">
-          <div class="stat"><b>89.67M</b><span>当前在训参数</span></div>
-          <div class="stat"><b>8 + 1</b><span>路由 / 共享专家</span></div>
+          <div class="stat"><b>64.87M</b><span>已终止模型</span></div>
+          <div class="stat"><b>3 次</b><span>训练终止</span></div>
           <div class="stat"><b>2.36 亿</b><span>预训练 token</span></div>
           <div class="stat"><b>单卡 A100</b><span>40G 显存</span></div>
         </div>
       </div>
       <div class="reveal d2">
         <div class="spec-card" aria-label="焦点模型规格卡">
-          <div class="spec-head"><h2>LingJie-Chat-v2-Beta</h2><span class="badge preview"><span class="dot"></span>训练中</span></div>
+          <div class="spec-head"><h2>LingJie-Chat-v2-Beta</h2><span class="badge fail">失败 · 已终止</span></div>
           <div class="spec-rows">
-            <div class="spec-row"><span class="k">架构</span><span class="v">HRLM v3.3（递归 + MoE）</span></div>
-            <div class="spec-row"><span class="k">参数量</span><span class="v">89.67M（激活 55M）</span></div>
-            <div class="spec-row"><span class="k">结构</span><span class="v">7 GDN + 3 Mamba-2/Attn + MoE</span></div>
-            <div class="spec-row"><span class="k">递归深度</span><span class="v">最多 3 轮（Router 分配）</span></div>
-            <div class="spec-row"><span class="k">训练硬件</span><span class="v">单张 A100 40G</span></div>
-            <div class="spec-row"><span class="k">许可证</span><span class="v">未发布（训练中）</span></div>
+            <div class="spec-row"><span class="k">架构</span><span class="v">HRLM v3.3（递归 + 混合）</span></div>
+            <div class="spec-row"><span class="k">参数量</span><span class="v">64.87M</span></div>
+            <div class="spec-row"><span class="k">结构</span><span class="v">7 GDN + 3 Mamba-2/Attn</span></div>
+            <div class="spec-row"><span class="k">终止于</span><span class="v">step 120 / 1072，loss 8.0</span></div>
+            <div class="spec-row"><span class="k">失败原因</span><span class="v">语料仅为所需的 1/8</span></div>
+            <div class="spec-row"><span class="k">状态</span><span class="v">训练终止 · 未发布</span></div>
           </div>
           <div class="spec-cmd">
             <span class="prompt">$</span>
@@ -658,7 +646,7 @@ body.has-banner main{padding-top:calc(var(--nav-h) + var(--banner-h))}
         </button>
         <button class="entry-card" data-goto="models">
           <span class="ec-top"><span class="ec-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span><svg class="ic ec-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-          <h3>模型</h3><p>已发布、训练中、以及失败的模型，全部列出来。</p><span class="ec-idx">06 · MODELS</span>
+          <h3>模型</h3><p>已发布的和失败的模型，全部列出来。</p><span class="ec-idx">06 · MODELS</span>
         </button>
       </div>
       <div class="dev-strip">
@@ -1154,11 +1142,11 @@ python -m hrlm.train --stage pretrain --arch hrlm \
     <div class="view-head reveal">
       <div class="sec-label">06 · 模型库 MODELS</div>
       <h2>模型库，<span class="mark">失败也摆出来</span></h2>
-      <p class="view-sub">这里同时列出已发布、训练中、以及<b>失败的</b>模型。失败品只做展示与复盘，不提供权重和复现命令——把它们藏起来，才是对这条路上所有试错的不尊重。</p>
+      <p class="view-sub">这里同时列出已发布和<b>失败的</b>模型。失败品只做展示与复盘，不提供权重和复现命令——把它们藏起来，才是对这条路上所有试错的不尊重。</p>
     </div>
     <div class="block reveal">
       <div class="next-gen reveal">
-        <p><span class="badge preview" style="vertical-align:2px"><span class="dot"></span>预览版 · 训练中</span> <b>LingJie-Chat-v2-Beta</b>（HRLM v3.3，89.67M MoE）正在单张 A100 40G 上预训练，权重尚未发布。</p>
+        <p><span class="badge fail" style="vertical-align:2px">失败品 · 训练终止</span> <b>LingJie-Chat-v2-Beta</b> 在 A100 上训练至 step 120 后终止：2.36 亿 token 的语料量不足，loss 停在 8.0，未产出可用权重。</p>
         <button class="btn btn-ghost btn-sm" data-goto="paper">HRLM v3.3 论文</button>
       </div>
       <div class="model-count" id="modelCount"></div>
@@ -1214,7 +1202,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
         <div class="roadmap" style="grid-template-columns:1fr">
           <div class="rm-card"><div class="rm-phase">PHASE 1</div><h4>窄域代码模型</h4><p>LingJie-Code-v1-Pro（202M，JAM 架构）已发布，技术报告 + 权重 + 脚本 + 数据全部公开。</p><span class="rm-status done">已完成</span></div>
           <div class="rm-card"><div class="rm-phase">PHASE 2</div><h4>表示与架构探索</h4><p>v2（AST 括号树）、v3（JAM + MoE）、v4（动作流 + 490.9M 稠密）三次尝试全部失败，复盘已写成「模型探究」。</p><span class="rm-status">已归档 · 失败</span></div>
-          <div class="rm-card"><div class="rm-phase">PHASE 3</div><h4>中文对话模型</h4><p>LingJie-Chat-v2-Beta（HRLM v3.3，89.67M MoE）正在单卡 A100 40G 上预训练。</p><span class="rm-status">进行中</span></div>
+          <div class="rm-card"><div class="rm-phase">PHASE 3</div><h4>中文对话模型</h4><p>LingJie-Chat-v2-Beta（HRLM v3.3）：训练至 step 120 终止。2.36 亿 token 语料不足，10 倍于 Chinchilla 要求的数据缺口无法靠调参弥补。</p><span class="rm-status">失败</span></div>
         </div>
       </div>
     </div>
@@ -1261,6 +1249,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
     <div class="paper-layout">
       <aside class="paper-toc reveal" aria-label="论文目录">
         <div class="toc-title">目录 CONTENTS</div>
+        <button data-scroll="p-review">检讨</button>
         <button data-scroll="p-abstract">摘要</button>
         <button data-scroll="p-tradeoff">核心设计取舍</button>
         <button data-scroll="p-arch">1 · 架构规范（冻结）</button>
@@ -1272,7 +1261,7 @@ python -m hrlm.train --stage pretrain --arch hrlm \
       </aside>
       <article class="paper-main">
         <div class="reveal">
-          <span class="paper-badge">技术预览 · TECHNICAL PREVIEW · v0.9</span>
+          <span class="paper-badge" style="color:var(--danger);border-color:#f0d3cf">失败复盘 · POST-MORTEM</span>
           <h1 class="paper-title">HRLM v3.3 × LingJie 数据体系</h1>
           <p class="paper-subtitle">混合递归语言模型（Hybrid Recursive Language Model）与配套中文数据体系 —— LingJie-Chat-v2-Beta（HRLM v3.3，89.67M）的架构与训练规范。</p>
           <div class="paper-meta"><span>LingJie 团队</span><span>开发者 · 9178nekomc</span><span>架构与参数已冻结</span><span>LingJie.xyz · 2026</span></div>
@@ -1284,6 +1273,17 @@ python -m hrlm.train --stage pretrain --arch hrlm \
             <div class="p-kpi"><b>11 / 11</b><span>回归测试通过</span></div>
           </div>
         </div>
+
+        <section class="p-sec reveal" id="p-review">
+          <h2>检讨：这个模型为什么失败</h2>
+          <p><strong>一、根因在第一天就存在，我没有让它主导决策。</strong>用户提供的预训练语料是 2.36 亿 token。65M 参数的模型按 Chinchilla 缩放律需要约 13 亿 token；要进入「困惑度 30 以内」的可用区间，实际需要 20 亿以上。我在第一次核算数据量时就得出了这个结论，但当时的处理方式是「先跑起来看」，而不是把它作为硬约束摆到桌面上。结果是：后面每一次 loss 不及预期，我都在事后解释「数据不够」，而不是在此之前让这个前提决定做不做、怎么做。技术判断让位给了进度压力，这是最根本的失误。</p>
+          <p><strong>二、分词器的错误在本地就该被拦住。</strong>第一版把每个汉字孤立成预 token，BPE 因此永远无法跨字合并，实测压缩率只有 1.045 字符/token——等于让模型逐字预测，loss 天然虚高。这个现象在本地 MVP 阶段就已经打印出来了：12 个汉字编成 12 个 token。我当时看到了，却用「48k 词表在 60M 字符上还没合并开」说服了自己，没有把它当成红色警报。直到两轮训练、约四小时 GPU 时间烧完，才改为按子句切分，压缩率提到 1.685。这个改动如果放在第一天，后面至少省六小时。</p>
+          <p><strong>三、把 GPU 当调试环境，是流程性错误。</strong>分词器崩溃、打包 OOM、显存不足、吞吐只有预期的三分之一、MoE 调度过慢——这些问题没有一个是必须在 GPU 上发现的，全部可以在本地用 20MB 数据切片复现。实际做法却是每发现一个就重启一次云端训练，单次重启 10 到 40 分钟，累计至少五次。这些时间全部计入用户账单。正确流程是：本地把「分词 → 打包 → 五十步训练 → 验证集」全链路跑通，再上云。</p>
+          <p><strong>四、架构决策摇摆，代价由用户承担。</strong>在「参数量比不足就加参数」的指令下，我临时加入 8 路由专家 + 1 共享专家的 MoE，实测 89.67M。加之前没有先测调度开销；加之后在 A100 上实测 22.7 秒/步，比 65M 稠密的 12.2 秒慢一倍，只能回退。一次来回约两小时。架构本身没有错——11 项回归测试确实全过，缓存一致性 1.4e-6——但没测性能就上线，是工程判断失误。</p>
+          <p><strong>五、沟通上，我用解释代替了结论。</strong>用户反复问「能不能用」「loss 为什么高」。我给出的是一层层技术解释：泛化与背诵的区别、语言熵的下限、Chinchilla 曲线。这些解释本身没错，但在那个情境下等于回避——用户要的是一句话结论：「这个数据量做不出能聊天的模型」。我应该在被第一次问到时就把最坏结论说死，让他决定是否继续投入，而不是陪着他一轮轮试、一轮轮解释。</p>
+          <p><strong>六、还有一条不该忽略的：我把「跑完」当成了目标。</strong>先后试了 65M 稠密、90M MoE、又退回 65M，每次都以「先跑起来再说」收尾。真正的做法应该是：先用本地小样本把「这个数据量能达到的最优 loss」估出来（Chinchilla 直接给数），再决定要不要开这台机器。估算成本是十分钟，实际代价是三轮训练和数小时计费。</p>
+          <div class="ex-reason"><b>结论：</b>架构没有错，代码没有错，11 项回归测试也确实全过。但一个跑不完、跑完也聊不动的模型，测试全过没有意义。这次失败的全部责任在执行判断——数据不足这个前提我最早知道，却最晚承认。</div>
+        </section>
 
         <section class="p-sec reveal" id="p-abstract">
           <h2>摘要</h2>
@@ -1892,26 +1892,7 @@ window.addEventListener('scroll', function(){
 toTop.addEventListener('click', function(){
   window.scrollTo({top:0, behavior: reduced ? 'auto' : 'smooth'});
 });
-/* SECTION: announce banner */
-var announce = $('#announce');
-var bannerDismissed = false;
-function syncBanner(){
-  var show = currentPage === 'home' && !bannerDismissed;
-  document.body.classList.toggle('has-banner', show);
-  if(show){
-    document.documentElement.style.setProperty('--banner-h', announce.offsetHeight + 'px');
-  }
-}
-$('#annOpen').addEventListener('click', function(){ navigate('paper'); });
-$('#annClose').addEventListener('click', function(){
-  bannerDismissed = true;
-  syncBanner();
-});
-window.addEventListener('resize', function(){
-  if(document.body.classList.contains('has-banner')){
-    document.documentElement.style.setProperty('--banner-h', announce.offsetHeight + 'px');
-  }
-});
+function syncBanner(){}
 /* SECTION: paper toc */
 document.addEventListener('click', function(e){
   var t = e.target.closest ? e.target.closest('[data-scroll]') : null;
@@ -2152,9 +2133,9 @@ var MODELS = [
    dataDesc:'动作流表示：40 个专属 opcode + 参数槽 + 显式子节点计数 + <END>，取消括号配对。',
    metric:'验收 6/14（42.9%），节点覆盖 20/40；AST 分类 loss 3.69 → 0.0047。',
    desc:'表示层换了、格式学会了，但能力层没有：简单需求会生成空 Module，Intent 池化点在训练与推理时不匹配。'},
-  {id:'chat-v2-beta', name:'LingJie-Chat-v2-Beta', status:'preview',
-   statusText:'预览版 · 训练中', dom:'中文对话 + 基础数学 CoT', catLabel:'HRLM v3.3 MoE',
-   params:'89.67M', ctx:'8K（滑窗 4K）', size:'未发布（训练中）', quant:'—',
+  {id:'chat-v2-beta', name:'LingJie-Chat-v2-Beta', status:'fail',
+   statusText:'失败品 · 训练终止', dom:'中文对话 + 基础数学 CoT', catLabel:'HRLM v3.3 MoE',
+   params:'89.67M', ctx:'8K（滑窗 4K）', size:'未发布（训练终止）', quant:'—',
    hw:'单卡 A100 40G',
    dataset:'2.36 亿 token 预训练 + 647,136 条 SFT',
    dataDesc:'预训练 1,184,107 篇文档；SFT 每条 assistant 都带 [思考] 块，loss 只算思考与回答。',
@@ -2208,7 +2189,7 @@ function renderModels(){
     card.appendChild(foot);
     modelGrid.appendChild(card);
   });
-  $('#modelCount').textContent = '共 '+list.length+' 个模型 · 1 个已发布 · 1 个训练中 · 4 个失败只做展示';
+  $('#modelCount').textContent = '共 '+list.length+' 个模型 · 1 个已发布 · 5 个失败只做展示';
 }
 modelGrid.addEventListener('click', function(e){
   var cp = e.target.closest ? e.target.closest('.mc-copy') : null;
