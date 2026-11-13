@@ -371,6 +371,12 @@ select:hover{border-color:var(--ink3)}
 @keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .mc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .mc-top h3{font-size:.98rem;font-family:var(--mono);font-weight:600}
+.mc-title{display:flex;align-items:center;gap:9px;flex-wrap:wrap;min-width:0}
+.mc-vision{display:inline-flex;align-items:center;gap:7px;flex-shrink:0}
+.mc-vision svg{width:16px;height:16px;color:var(--ink3)}
+.tag-soft{font-size:11px;line-height:1;padding:4px 8px;border-radius:999px;
+  background:var(--paper3);color:var(--ink3);border:1px solid var(--line);white-space:nowrap}
+[data-theme="dark"] .tag-soft{background:#1d222a;color:#98a0ab;border-color:#2c333d}
 .mc-license{font-family:var(--mono);font-size:.6rem;color:var(--ink2);border:1px solid var(--line2);padding:3px 8px;border-radius:99px;white-space:nowrap}
 .mc-tags{display:flex;flex-wrap:wrap;gap:6px}
 .mc-tag{font-size:.7rem;padding:4px 10px;border-radius:7px;background:var(--paper2);border:1px solid var(--line);color:var(--ink2)}
@@ -2270,6 +2276,15 @@ $('#costPresets').addEventListener('click', function(e){
 updateCost();
 /* SECTION: models data */
 var MODELS = [
+  {id:'lv-chat-v2-flash', name:'LingJieLV-Chat-v2-Flash', status:'ok', vision:true,
+   statusText:'已发布 · 首个多模态', dom:'中文对话 + 轻量图文问答',
+   catLabel:'36M MoE + TinyCLIP',
+   params:'36.20M（激活 16.74M）', ctx:'768', size:'292 MB（打包）', quant:'—',
+   hw:'单卡 RTX 4090',
+   dataset:'3.64 亿 token 预训练 + 1.2 万条 SFT + 2.8 万图文对 + 3.9 万 VQA',
+   dataDesc:'预训练用 MiniMind 语料与自建中文语料合并去重；视觉对齐用 COCO-CN / Flickr30k-CN；多模态 SFT 用 VQA v2 中文译本。',
+   metric:'VAL loss 1.6983；格式合规 96.0%；C-Eval 28.17%；图文二选一 74.0%；VQA 45.0%（宽松子串口径）。',
+   desc:'凌界系列第一个可发布的对话模型，也是首个多模态：12 层 MoE（4 专家 top-1，激活约 46%），8192 词表，外挂冻结的 TinyCLIP ViT-40M/32，单卡 4090 从零训练 29 分钟。'},
   {id:'chat-v1-flash', name:'LingJie-Chat-v1-Flash', status:'archived',
    statusText:'已归档', dom:'超小对话基线', catLabel:'传统 MoE',
    params:'超小（稀疏激活）', ctx:'—', size:'未发布', quant:'—', hw:'单卡',
@@ -2321,7 +2336,16 @@ function renderModels(){
     if(m.status === 'fail') card.classList.add('is-fail');
     if(m.status === 'preview') card.classList.add('is-preview');
     var top = el('div','mc-top');
-    top.appendChild(el('h3','',m.name));
+    var tt = el('div','mc-title');
+    tt.appendChild(el('h3','',m.name));
+    if(m.vision){
+      var vis = el('span','mc-vision');
+      vis.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg>';
+      vis.appendChild(el('span','tag-soft','视觉'));
+      vis.setAttribute('title','支持图像输入');
+      tt.appendChild(vis);
+    }
+    top.appendChild(tt);
     card.appendChild(top);
     var st = el('div','mc-status');
     var badgeCls = m.status === 'fail' ? 'badge fail'
@@ -2358,7 +2382,7 @@ function renderModels(){
     card.appendChild(foot);
     modelGrid.appendChild(card);
   });
-  $('#modelCount').textContent = '共 '+list.length+' 个模型 · 1 个已发布 · 5 个失败只做展示';
+  $('#modelCount').textContent = '共 '+list.length+' 个模型 · 2 个已发布 · 5 个失败只做展示';
 }
 modelGrid.addEventListener('click', function(e){
   var cp = e.target.closest ? e.target.closest('.mc-copy') : null;
@@ -2376,6 +2400,69 @@ modelGrid.addEventListener('click', function(e){
 renderModels();
 /* SECTION: per-model papers */
 var DOCS = {
+
+  'lv-chat-v2-flash': {
+    badge: 'TECHNICAL REPORT · v2.0 · 已发布',
+    title: 'LingJieLV-Chat-v2-Flash：36M MoE + 冻结视觉塔',
+    subtitle: '凌界系列第一版可发布的中文对话模型，也是首个多模态 —— 单卡 4090、从零训练、29 分钟预训练。',
+    meta: ['LingJie 团队', '开发者 · 9178nekomc', '架构 · MoE 36M', '权重已发布'],
+    kpis: [['36.20M', '总参数'], ['16.74M', '激活参数'], ['1.6983', 'VAL loss'], ['292 MB', '打包权重']],
+    sections: [
+      {id: 'd1', title: '摘要', html: `
+        <p>LingJieLV-Chat-v2-Flash 是凌界系列<strong>第一版可发布</strong>的中文对话模型：<b>36.204M</b> 总参数、<b>16.740M</b> 激活参数的稀疏 MoE，单卡 RTX 4090 从零训练。文本之外，它外挂一个<strong>冻结</strong>的 TinyCLIP ViT-40M/32 作为视觉塔，具备轻量图文问答能力。</p>
+        <p>定位是「聊天为主战场，多模态为附加能力」。预训练 3.64 亿 token 只用 <b>29.4 分钟</b>，VAL loss 收敛到 <b>1.6983</b>，指令格式合规率 96.0%。</p>`},
+      {id: 'd2', title: '1 · 模型结构', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <tbody>
+            <tr><td class="k">总参数</td><td class="lj">36.204M</td></tr>
+            <tr><td class="k">激活参数</td><td class="lj">16.740M（top-1，4 专家）</td></tr>
+            <tr><td class="k">层数 / 头数</td><td class="lj">12 层 / 6 头（head_dim 64）</td></tr>
+            <tr><td class="k">隐层 / FFN</td><td class="lj">384 / 704（每专家）</td></tr>
+            <tr><td class="k">词表 / 上下文</td><td class="lj">8192（ByteLevel BPE）/ 768</td></tr>
+            <tr><td class="k">归一化 / 位置</td><td class="lj">RMSNorm + RoPE，GELU，绑定嵌入</td></tr>
+            <tr><td class="k">视觉塔</td><td class="lj">TinyCLIP ViT-40M/32（冻结，39.43M），输出 49×512</td></tr>
+            <tr><td class="k">投影层</td><td class="lj">0.689M（512→768→384）</td></tr>
+            <tr><td class="k">打包总计</td><td class="lj">76.323M（mm_pack.pt，292MB）</td></tr>
+          </tbody>
+        </table></div>
+        <p>图像以 49 个 <span class="mono">&lt;|image|&gt;</span> 占位，<span class="mono">emb[mask]=feats</span> 注入。文本模板：<span class="mono">&lt;|user|&gt;…&lt;|end|&gt;&lt;|assistant|&gt;…&lt;|end|&gt;</span>。</p>`},
+      {id: 'd3', title: '2 · 训练配方', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>阶段</th><th>数据</th><th>步数 / token</th><th>耗时</th></tr></thead>
+          <tbody>
+            <tr><td class="k">预训练</td><td class="big">MiniMind 语料 + 自建语料（去重）</td><td class="big">14,800 步 / 3.64 亿</td><td class="big">1,765 s</td></tr>
+            <tr><td class="k">文本 SFT</td><td class="big">Alpaca-GPT4-ZH 12,000 条</td><td class="big">750 步</td><td class="big">78 s</td></tr>
+            <tr><td class="k">视觉对齐</td><td class="big">COCO-CN / Flickr30k-CN 28,000 图</td><td class="big">1,968 步</td><td class="big">229 s</td></tr>
+            <tr><td class="k">多模态 SFT</td><td class="big">VQA 39,039 条</td><td class="big">2,438 步</td><td class="big">273 s</td></tr>
+          </tbody>
+        </table></div>
+        <p>预训练：bs 32×768、lr 4e-4 cosine→4e-5、warmup 300、AdamW(0.9,0.95)、wd 0.1、clip 1.0、bf16。实测 8.4 step/s ≈ <b>207k tok/s</b>。</p>
+        <p>多模态 SFT 只解冻 projector + blocks[0] + blocks[11] + RMSNorm，projector lr 5e-4、LLM lr 1e-5、text_ratio 0.23。</p>`},
+      {id: 'd4', title: '3 · 评测（G1–G6）', html: `
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>项</th><th>指标</th><th>结果</th></tr></thead>
+          <tbody>
+            <tr><td class="k">G1 训练量</td><td class="big">预训练 token</td><td class="lj">3.64e8 ✓</td></tr>
+            <tr><td class="k">G2 收敛</td><td class="big">VAL loss</td><td class="lj"><b>1.6983</b> ✓</td></tr>
+            <tr><td class="k">G3 语言</td><td class="big">格式合规 / C-Eval</td><td class="lj">96.0% / 28.17% ✓</td></tr>
+            <tr><td class="k">G4 视觉判别</td><td class="big">图文二选一</td><td class="lj">74.0%（gap 0.590）✓</td></tr>
+            <tr><td class="k">G5 VQA</td><td class="big">宽松子串匹配</td><td class="lj">45.0% ✓</td></tr>
+            <tr><td class="k">G6 打包</td><td class="big">292MB / 非有限张量 0 / 重建差 0.0</td><td class="lj">TTFT 30.3 / 17.9 ms ✓</td></tr>
+          </tbody>
+        </table></div>
+        <p><b>视觉是否真的被使用</b>（32 条 caption 换图对照）：正确图 CE <b>2.9791</b>，换别的图 3.8225（+0.843），全零图 4.0555（+1.076）→ VISION_USED。专家负载 0.251/0.242/0.244/0.263，<b>无塌缩</b>。</p>
+        <div class="ex-reason amber"><b>口径说明：</b>C-Eval 必须用<b>内容打分</b>——字母打分下 200 题有 148 题选 A（74% 位置偏置）；改为比较选项文本 mean logprob 后分布正常，准确率 28.17%。G5 的 45% 是宽松子串口径，不等价于严格 VQA 准确率。</div>`},
+      {id: 'd5', title: '4 · 已知局限', html: `
+        <p><b>① 看图只到单词级</b>（「自行车」「飞机」），不生成句子级描述。<b>② 长回答约 3 句后复读</b>，需要采样约束或更长上下文训练。<b>③ 不具备通用世界知识</b>，C-Eval 28.17% 仅略高于随机基线。<b>④ 翻译抽检样本量小</b>（20 条 caption、10 条 VQA），未做满 200 条。</p>`},
+      {id: 'd6', title: '5 · 本地运行', html: `
+        <pre class="cb">pip install torch tokenizers
+python serve_local.py 8080
+<span class="c"># 浏览器打开 http://127.0.0.1:8080</span></pre>
+        <p>推荐使用 <span class="mono">mm_pack.pt</span>（292MB，自包含 lm + projector + vision + cfg）。<span class="mono">mm_final.pt</span> 不含视觉塔权重，无法独立推理。</p>
+        <pre class="cb">391c9498b8f27688825ae668979a977e3235f5098a980f4c3c2fbe6bf4fa6fdc  mm_pack.pt
+9aa3856f183883c6088cf30c0c81f3cf1a040b9764d0ca0922caaaa3f7cda4a0  tokenizer.json</pre>`}
+    ]
+  },
   'chat-v1-flash': {
     badge: 'TECH NOTE · ARCHIVE · 无正式报告',
     title: 'LingJie-Chat-v1-Flash 技术说明',
@@ -2678,7 +2765,7 @@ function renderDoc(id){
     return '<section class="p-sec" id="'+s.id+'"><h2>'+s.title+'</h2>'+s.html+'</section>';
   }).join('');
   $('#docRelated').innerHTML = '';
-  var others = ['chat-v1-flash','code-v1-pro','code-v2-ast','code-v3-jam-xl','code-v4-dense']
+  var others = ['lv-chat-v2-flash','chat-v1-flash','code-v1-pro','code-v2-ast','code-v3-jam-xl','code-v4-dense']
     .filter(function(k){ return k !== id; });
   others.forEach(function(k){
     var b = el('button','btn btn-ghost btn-sm');
